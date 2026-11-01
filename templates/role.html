@@ -1,0 +1,28 @@
+{% set auth_page = true %}{% extends 'base.html' %}
+{% block content %}
+    <section class="auth-panel">
+        <a class="back"
+           href="{{ url_for('goer.welcome') }}"
+           aria-label="Back to welcome">←</a>
+        <h1>
+            How will you use
+            <br>
+            ChariGo?
+        </h1>
+        <form method="get"
+              action="{{ url_for('auth.register') }}"
+              class="role-form">
+            {% for role,label,icon,description in [('charity_goer','Charity Goer','goer','Donate, volunteer, and discover charities.'),('charity_organization','Organizations','organization','Create campaigns and find volunteers.')] %}
+                <label class="role-card">
+                    <input type="radio"
+                           name="role"
+                           value="{{ role }}"
+                           {% if loop.first %}checked{% endif %}>
+                    <img src="{{ url_for('static',filename='icons/'+icon+'.svg') }}" alt="">
+                    <span><strong>{{ label }}</strong><span>{{ description }}</span></span>
+                </label>
+            {% endfor %}
+            <button class="button full">Continue</button>
+        </form>
+    </section>
+{% endblock %}

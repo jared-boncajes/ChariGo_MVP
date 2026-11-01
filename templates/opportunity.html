@@ -1,0 +1,57 @@
+{% extends 'base.html' %}{% from 'components/ui.html' import heading,csrf,textarea,badge with context %}
+{% block content %}
+    <div class="narrow-wide">
+        {{ heading('Volunteering Details',url_for('goer.fundraiser',fid=opportunity.fundraiser_id) ) }}
+        <div class="detail-grid">
+            <img class="detail-cover"
+                 src="{{ image_url(opportunity.fundraiser.cover_image) }}"
+                 alt="{{ opportunity.title }}">
+            <section>
+                <h1>{{ opportunity.title }}</h1>
+                <a href="{{ url_for('goer.organization',oid=opportunity.fundraiser.organization_id) }}">{{ opportunity.fundraiser.organization.name }}</a>
+                <dl>
+                    <dt>Date</dt>
+                    <dd>
+                        {{ opportunity.event_date|localdate }}
+                    </dd>
+                    <dt>Location</dt>
+                    <dd>
+                        {{ opportunity.location }}
+                    </dd>
+                    <dt>Volunteers needed</dt>
+                    <dd>
+                        {{ opportunity.slots - opportunity.accepted_count }} remaining / {{ opportunity.slots }}
+                    </dd>
+                </dl>
+            </section>
+        </div>
+        <div class="two-columns">
+            <section class="card">
+                <h2>What to expect</h2>
+                <p class="preserve">{{ opportunity.description }}</p>
+            </section>
+            <section class="card">
+                <h2>Requirements</h2>
+                <p class="preserve">{{ opportunity.requirements }}</p>
+            </section>
+        </div>
+        {% if existing %}
+            <div class="notice">You have already applied. {{ badge(existing.status) }}</div>
+            <a class="button" href="{{ url_for('goer.volunteer_history') }}">View Volunteer History</a>
+        {% elif opportunity.available and opportunity.accepted_count < opportunity.slots %}
+            <form method="post" class="narrow application-form">
+                {{ csrf() }}
+                <h2>Volunteer Now</h2>
+                <p>
+                    Applying as <strong>{{ current_user.name }}</strong>. <a href="{{ url_for('goer.edit_profile') }}">Update your skills and availability</a>.
+                </p>
+                {{ textarea('message','Why would you like to volunteer?',maxlength=2000,minlength=10) }}
+                <button class="button full">Review Application</button>
+            </form>
+        {% else %}
+            <p class="notice">This volunteer opportunity is closed or full.</p>
+            <a class="button secondary"
+               href="{{ url_for('goer.causes',volunteer=1) }}">Find another opportunity</a>
+        {% endif %}
+    </div>
+{% endblock %}

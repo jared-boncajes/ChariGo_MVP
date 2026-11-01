@@ -1,0 +1,54 @@
+{% extends 'base.html' %}{% from 'components/ui.html' import avatar,csrf,empty with context %}
+{% block content %}
+    <div class="narrow">
+        <section class="profile-heading">
+            {{ avatar(current_user,true) }}
+            <h1>{{ current_user.name }}</h1>
+            <p class="muted">{{ current_user.email }}</p>
+        </section>
+        {% if current_user.role == 'charity_goer' %}
+            <h2>My Impact</h2>
+            <div class="stats-grid">
+                <div class="stat">
+                    <strong>{{ current_user.donations|sum(attribute='amount_cents') |peso }}</strong><span>Total Donations</span>
+                </div>
+                <div class="stat">
+                    <strong>{{ current_user.applications|selectattr('status', 'equalto', 'accepted') |list|length }}</strong><span>Volunteers</span>
+                </div>
+                <div class="stat">
+                    <strong>{{ current_user.saved_charities|length }}</strong><span>Saved Charities</span>
+                </div>
+            </div>
+            <div class="stack">
+                <a class="action-row" href="{{ url_for('goer.donation_history') }}">Donation history <span>›</span></a><a class="action-row" href="{{ url_for('goer.volunteer_history') }}">Volunteer history <span>›</span></a>
+            </div>
+            <h2>Saved Charities</h2>
+            <div class="stack">
+                {% for saved in current_user.saved_charities %}
+                    {% if saved.organization.public %}
+                        <a class="action-row"
+                           href="{{ url_for('goer.organization',oid=saved.organization_id) }}">{{ saved.organization.name }} <span>›</span></a>
+                    {% else %}
+                        <p class="card">{{ saved.organization.name }} is currently unavailable.</p>
+                    {% endif %}
+                {% else %}
+                    <p class="muted">Save a charity from its profile to find it here.</p>
+                {% endfor %}
+            </div>
+        {% elif current_user.role == 'charity_organization' %}
+            <a class="action-row" href="{{ url_for('organization.dashboard') }}">Organization profile <span>›</span></a>
+        {% else %}
+            <a class="action-row" href="{{ url_for('admin.dashboard') }}">Administrator Dashboard <span>›</span></a>
+        {% endif %}
+        <h2>My Account</h2>
+        <div class="stack">
+            <a class="action-row" href="{{ url_for('goer.edit_profile') }}">Edit profile <span>›</span></a>
+            <form action="{{ url_for('auth.logout') }}"
+                  method="post"
+                  data-confirm="Log out of ChariGo?">
+                {{ csrf() }}
+                <button class="button secondary full">Log out</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

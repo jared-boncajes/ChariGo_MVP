@@ -1,0 +1,179 @@
+{% extends 'base.html' %}{% from 'components/ui.html' import heading,avatar,badge with context %}
+{% block content %}
+    <div class="narrow-wide">
+        {{ heading(title,url_for('admin.users') if kind == 'user' else url_for('admin.organizations') if kind == 'organization' else url_for('admin.opportunities')) }}
+        {% if kind == 'user' %}
+            <section class="profile-heading">
+                {{ avatar(item,true) }}
+                <h1>{{ item.name }}</h1>
+                {{ badge(item.account_status) }}
+            </section>
+            <section class="card">
+                <dl>
+                    <dt>Email</dt>
+                    <dd>
+                        {{ item.email }}
+                    </dd>
+                    <dt>Role</dt>
+                    <dd>
+                        {{ item.role|replace('_', ' ') |title }}
+                    </dd>
+                    <dt>Registered</dt>
+                    <dd>
+                        {{ item.created_at|localdate }}
+                    </dd>
+                    <dt>Location</dt>
+                    <dd>
+                        {{ item.location or 'Not provided' }}
+                    </dd>
+                    <dt>Donations</dt>
+                    <dd>
+                        {{ item.donations|length }}
+                    </dd>
+                    <dt>Volunteer applications</dt>
+                    <dd>
+                        {{ item.applications|length }}
+                    </dd>
+                </dl>
+                {% if item.organization %}
+                    <a href="{{ url_for('admin.organization_detail',oid=item.organization.id) }}">Review {{ item.organization.name }} →</a>
+                {% endif %}
+            </section>
+            {% if item.id != current_user.id %}
+                <a class="button {{ 'danger' if item.account_status == 'active' else '' }}"
+                   href="{{ url_for('admin.action',kind='user',oid=item.id,action='deactivate' if item.account_status == 'active' else 'reactivate') }}">{{ 'Deactivate' if item.account_status == 'active' else 'Reactivate' }} Account</a>
+            {% else %}
+                <p class="notice">You cannot deactivate your own administrator account.</p>
+            {% endif %}
+        {% elif kind == 'organization' %}
+            <section class="organization-identity">
+                {{ avatar(item,true) }}
+                <div>
+                    <h1>{{ item.name }}</h1>
+                    {{ badge(item.verification_status) }}
+                    <p>Registered {{ item.created_at|localdate }}</p>
+                </div>
+            </section>
+            <div class="two-columns">
+                <section class="card">
+                    <h2>About</h2>
+                    <p class="preserve">{{ item.description or 'Not submitted' }}</p>
+                    <h2>Mission</h2>
+                    <p class="preserve">{{ item.mission or 'Not submitted' }}</p>
+                    <h2>Portfolio</h2>
+                    <p class="preserve">{{ item.portfolio or 'Not submitted' }}</p>
+                    {% if item.portfolio_file %}
+                        <a href="{{ url_for('organization.portfolio',oid=item.id) }}">Download submitted portfolio (PDF)</a>
+                    {% endif %}
+                </section>
+                <section class="card">
+                    <h2>Registration Information</h2>
+                    <dl>
+                        <dt>Contact email</dt>
+                        <dd>
+                            {{ item.contact_email }}
+                        </dd>
+                        <dt>Phone</dt>
+                        <dd>
+                            {{ item.phone or 'Not provided' }}
+                        </dd>
+                        <dt>Location</dt>
+                        <dd>
+                            {{ item.location or 'Not provided' }}
+                        </dd>
+                        <dt>Fundraisers</dt>
+                        <dd>
+                            {{ item.fundraisers|length }}
+                        </dd>
+                    </dl>
+                    <a href="{{ url_for('admin.user_detail',uid=item.user_id) }}">View organization account →</a>
+                    {% if item.rejection_reason %}<p class="notice">Rejection reason: {{ item.rejection_reason }}</p>{% endif %}
+                </section>
+            </div>
+            <div class="actions">
+                {% if item.verification_status in ['pending','rejected'] %}
+                    <a class="button"
+                       href="{{ url_for('admin.action',kind=kind,oid=item.id,action='approve') }}">Approve Organization</a>
+                    {% if item.verification_status == 'pending' %}
+                        <a class="button secondary"
+                           href="{{ url_for('admin.action',kind=kind,oid=item.id,action='reject') }}">Reject Organization</a>
+                    {% endif %}
+                {% elif item.verification_status == 'verified' %}
+                    <a class="button danger"
+                       href="{{ url_for('admin.action',kind=kind,oid=item.id,action='deactivate') }}">Deactivate Organization</a>
+                {% else %}
+                    <a class="button"
+                       href="{{ url_for('admin.action',kind=kind,oid=item.id,action='reactivate') }}">Reactivate Organization</a>
+                {% endif %}
+            </div>
+        {% else %}
+            {% set f = item if kind == 'fundraiser' else item.fundraiser %}
+            <div class="detail-grid">
+                <img class="detail-cover"
+                     src="{{ image_url(f.cover_image) }}"
+                     alt="{{ item.title }}">
+                <section>
+                    <h1>{{ item.title }}</h1>
+                    <a href="{{ url_for('admin.organization_detail',oid=f.organization_id) }}">{{ f.organization.name }}</a>
+                    <p>{{ badge(item.moderation_status if kind == 'fundraiser' else item.status) }}</p>
+                    <p class="preserve">{{ item.description }}</p>
+                    <dl>
+                        <dt>Category</dt>
+                        <dd>
+                            {{ f.category }}
+                        </dd>
+                        <dt>Location</dt>
+                        <dd>
+                            {{ item.location }}
+                        </dd>
+                        {% if kind == 'fundraiser' %}
+                            <dt>Campaign dates</dt>
+                            <dd>
+                                {{ f.start_date|localdate }} – {{ f.end_date|localdate }}
+                            </dd>
+                            <dt>Goal</dt>
+                            <dd>
+                                {{ f.goal_cents|peso }}
+                            </dd>
+                            <dt>Raised</dt>
+                            <dd>
+                                {{ f.raised_cents|peso }}
+                            </dd>
+                            <dt>Campaign status</dt>
+                            <dd>
+                                {{ f.status }}
+                            </dd>
+                        {% else %}
+                            <dt>Event date</dt>
+                            <dd>
+                                {{ item.event_date|localdate }}
+                            </dd>
+                            <dt>Volunteer slots</dt>
+                            <dd>
+                                {{ item.accepted_count }} / {{ item.slots }}
+                            </dd>
+                            <dt>Requirements</dt>
+                            <dd>
+                                {{ item.requirements }}
+                            </dd>
+                        {% endif %}
+                    </dl>
+                </section>
+            </div>
+            <div class="actions">
+                {% set status = item.moderation_status if kind == 'fundraiser' else item.status %}
+                {% if status == 'active' %}
+                    <a class="button danger"
+                       href="{{ url_for('admin.action',kind=kind,oid=item.id,action='deactivate') }}">Deactivate Opportunity</a><a class="button secondary"
+   href="{{ url_for('admin.action',kind=kind,oid=item.id,action='remove') }}">Remove from listings</a>
+                {% else %}
+                    <a class="button"
+                       href="{{ url_for('admin.action',kind=kind,oid=item.id,action='reactivate') }}">Reactivate Opportunity</a>
+                {% endif %}
+            </div>
+            <p class="fine-print">
+                Reactivation restores moderation approval; it does not reopen a completed campaign or an inactive organization.
+            </p>
+        {% endif %}
+    </div>
+{% endblock %}

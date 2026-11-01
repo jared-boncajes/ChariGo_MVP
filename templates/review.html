@@ -1,0 +1,66 @@
+{% extends 'base.html' %}{% from 'components/ui.html' import heading,csrf with context %}
+{% block content %}
+    <div class="narrow">
+        {{ heading(title,url_for('goer.donate',fid=fundraiser.id) if kind == 'donation' else url_for('goer.opportunity',oid=opportunity.id)) }}
+        <section class="card review-card">
+            <h2>{{ fundraiser.title }}</h2>
+            <p>{{ fundraiser.organization.name }}</p>
+            <dl>
+                {% if kind == 'donation' %}
+                    <dt>Donation amount</dt>
+                    <dd>
+                        {{ pending.amount|peso }}
+                    </dd>
+                    <dt>Payment method</dt>
+                    <dd>
+                        {{ pending.method }} (simulated)
+                    </dd>
+                    <dt>Fees</dt>
+                    <dd>
+                        ₱0
+                    </dd>
+                    <dt>Anonymous</dt>
+                    <dd>
+                        {{ 'Yes' if pending.anonymous else 'No' }}
+                    </dd>
+                    <dt>Total</dt>
+                    <dd>
+                        <strong>{{ pending.amount|peso }}</strong>
+                    </dd>
+                {% else %}
+                    <dt>Volunteer</dt>
+                    <dd>
+                        {{ current_user.name }}
+                    </dd>
+                    <dt>Date</dt>
+                    <dd>
+                        {{ opportunity.event_date|localdate }}
+                    </dd>
+                    <dt>Location</dt>
+                    <dd>
+                        {{ opportunity.location }}
+                    </dd>
+                    <dt>Your message</dt>
+                    <dd class="preserve">
+                        {{ pending.message }}
+                    </dd>
+                {% endif %}
+            </dl>
+        </section>
+        <p class="notice">
+            {{ 'This is a simulated donation. No money will be charged.' if kind == 'donation' else 'Your application will be sent to the organization for review. Check your history for updates.' }}
+        </p>
+        <form method="post">
+            {{ csrf() }}
+            <input type="hidden" name="review_token" value="{{ pending.token }}">
+            <div class="actions">
+                <a class="button secondary"
+                   href="{{ url_for('goer.donate',fid=fundraiser.id) if kind == 'donation' else url_for('goer.opportunity',oid=opportunity.id) }}">Edit / Cancel</a>
+                <button class="button"
+                        data-processing="{{ 'Processing donation…' if kind == 'donation' else 'Submitting application…' }}">
+                    {{ 'Confirm Donation' if kind == 'donation' else 'Confirm Application' }}
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

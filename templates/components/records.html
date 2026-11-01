@@ -1,0 +1,14 @@
+{% from 'components/ui.html' import empty with context %}
+<div class="stack">
+    {% for record in records %}
+        <article class="card record-row">
+            <div>
+                <h3>{{ record.action }}</h3>
+                <p>{{ record.description }}</p>
+                <small>{{ record.actor.name if record.actor else 'System' }} · {{ record.target_type|title }} #{{ record.target_id }}</small>
+            </div>
+            <time datetime="{{ record.created_at.isoformat() }}">{{ record.created_at|localtime }}</time></article>
+    {% else %}
+        {{ empty('No system records match','Administrative actions will appear here.',url_for('admin.records') ,'Clear search') }}
+    {% endfor %}
+</div>

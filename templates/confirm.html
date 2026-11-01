@@ -1,0 +1,19 @@
+{% extends 'base.html' %}{% from 'components/ui.html' import heading,csrf,textarea with context %}
+{% block content %}
+    <div class="narrow">
+        {{ heading(title,cancel_url) }}
+        <section class="card confirmation">
+            <h2>{{ target }}</h2>
+            <p>{{ explanation }}</p>
+            <form method="post">
+                {{ csrf() }}
+                <input type="hidden" name="confirm" value="yes">
+                {% if ask_reason %}{{ textarea('reason','Reason',required=false,maxlength=750) }}{% endif %}
+                <div class="actions">
+                    <a class="button secondary" href="{{ cancel_url }}">Cancel</a>
+                    <button class="button" data-processing="Saving…">{{ button }}</button>
+                </div>
+            </form>
+        </section>
+    </div>
+{% endblock %}

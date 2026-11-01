@@ -1,0 +1,63 @@
+{% extends 'base.html' %}{% from 'components/ui.html' import heading,csrf with context %}
+{% block content %}
+    <div class="narrow">
+        {{ heading('Make a Donation',url_for('goer.fundraiser',fid=fundraiser.id) ) }}
+        <p class="muted">{{ fundraiser.title }} · {{ fundraiser.organization.name }}</p>
+        <div class="notice">Simulated payment · No money will be charged. Do not enter real payment credentials.</div>
+        <form method="post">
+            {{ csrf() }}
+            <fieldset>
+                <legend>Donation amount · One Time</legend>
+                <div class="amount-grid">
+                    {% for amount in [100,250,300,500,1500] %}
+                        <label class="choice">
+                            <input type="radio"
+                                   name="preset"
+                                   value="{{ amount }}"
+                                   {% if amount == 250 %}checked{% endif %}>
+                            <span>₱{{ '{:,}'.format(amount) }}</span>
+                        </label>
+                    {% endfor %}
+                    <label class="choice">
+                        <input type="radio" name="preset" value="custom">
+                        <span>Custom</span>
+                    </label>
+                </div>
+            </fieldset>
+            <label class="field">
+                <span>Amount in Philippine pesos</span>
+                <input id="donation-amount"
+                       type="number"
+                       name="amount"
+                       min="1"
+                       max="10000000"
+                       step="0.01"
+                       required
+                       value="{{ request.form.get('amount', 250) }}">
+            </label>
+            <div class="card">
+                <strong>Every contribution matters</strong>
+                <p>Choose an amount that is comfortable for you.</p>
+            </div>
+            <fieldset class="payment-methods">
+                <legend>Mock Payment Method</legend>
+                {% for method in methods %}
+                    <label class="payment-choice">
+                        <input type="radio"
+                               name="method"
+                               value="{{ method }}"
+                               {% if request.form.get('method','GCash') == method %}checked{% endif %}>
+                        <span>{{ method }}</span>
+                    </label>
+                {% endfor %}
+            </fieldset>
+            <label class="checkbox">
+                <input type="checkbox"
+                       name="anonymous"
+                       {% if request.form.get('anonymous') %}checked{% endif %}>
+                Donate anonymously
+            </label>
+            <button class="button full">Continue to review</button>
+        </form>
+    </div>
+{% endblock %}

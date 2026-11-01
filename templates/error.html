@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+    <section class="narrow empty">
+        <p class="eyebrow">CHARIGO · {{ error.code }}</p>
+        <h1>
+            {{ 'Page not found' if error.code == 404 else 'You cannot access this page' if error.code == 403 else 'Let’s try that again' }}
+        </h1>
+        <p>{{ error.description }}</p>
+        <div class="actions">
+            <a class="button" href="{{ url_for('goer.welcome') }}">Back to Home</a><a class="button secondary" href="{{ url_for('goer.causes') }}">Explore causes</a>
+        </div>
+    </section>
+{% endblock %}

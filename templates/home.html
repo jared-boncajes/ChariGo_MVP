@@ -1,0 +1,37 @@
+{% extends 'base.html' %}{% from 'components/ui.html' import fundraiser_card,empty with context %}
+{% block content %}
+    <h1 class="sr-only">ChariGo Home</h1>
+    <form class="search-form" action="{{ url_for('goer.causes') }}">
+        <label class="sr-only" for="home-search">Search causes</label>
+        <input id="home-search"
+               name="q"
+               type="search"
+               placeholder="Search causes, charities, or a location">
+        <button class="button" aria-label="Search causes">Search</button>
+    </form>
+    <section>
+        <div class="section-heading">
+            <h2>Featured Foundation</h2>
+            <a href="{{ url_for('goer.causes') }}">Explore charities →</a>
+        </div>
+        {% if organizations %}
+            {% set org = organizations[0] %}<a class="foundation-banner"
+   href="{{ url_for('goer.organization',oid=org.id) }}">
+            <img src="{{ image_url(org.banner) }}" alt="{{ org.name }} community">
+            <span><small>COMMUNITIES CREATING CHANGE</small><strong>{{ org.name }}</strong><span>Empowering Filipino communities <b aria-hidden="true">→</b></span></span></a>
+    {% endif %}
+</section>
+<section>
+    <div class="section-heading">
+        <h2>Featured Fundraisers</h2>
+        <a href="{{ url_for('goer.causes') }}">View all →</a>
+    </div>
+    <div class="campaign-grid">
+        {% for f in campaigns[:6] %}
+            {{ fundraiser_card(f) }}
+        {% else %}
+            {{ empty('No active fundraisers', 'Please check back soon for new community campaigns.') }}
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

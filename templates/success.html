@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+    <section class="narrow success-page">
+        <div class="success-symbol" aria-hidden="true">✓</div>
+        <h1>Thank You!</h1>
+        {% if kind == 'donation' %}
+            <p>
+                Your simulated donation has been successfully recorded for
+                <br>
+                <strong>{{ donation.fundraiser.organization.name }}</strong>.
+            </p>
+            <div class="card receipt">
+                <h2>{{ donation.fundraiser.title }}</h2>
+                <dl>
+                    <dt>Donation</dt>
+                    <dd>
+                        {{ donation.amount_cents|peso }}
+                    </dd>
+                    <dt>Date</dt>
+                    <dd>
+                        {{ donation.created_at|localdate }}
+                    </dd>
+                    <dt>Reference No.</dt>
+                    <dd>
+                        {{ donation.reference }}
+                    </dd>
+                    <dt>Payment method</dt>
+                    <dd>
+                        {{ donation.payment_method }} (simulated)
+                    </dd>
+                </dl>
+            </div>
+            <a class="button full" href="{{ url_for('goer.donation_history') }}">View Donation History</a>
+        {% else %}
+            <p>
+                Your volunteer request has been sent to
+                <br>
+                <strong>{{ application.opportunity.fundraiser.organization.name }}</strong>.
+            </p>
+            <p class="notice">Check Volunteer History for updates about your acceptance.</p>
+            <a class="button full" href="{{ url_for('goer.volunteer_history') }}">View Volunteer History</a>
+        {% endif %}
+        <a class="button secondary full" href="{{ url_for('goer.home') }}">Back to Home</a>
+    </section>
+{% endblock %}

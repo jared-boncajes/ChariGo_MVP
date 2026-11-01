@@ -1,0 +1,15 @@
+{% extends 'base.html' %}{% from 'components/ui.html' import heading with context %}
+{% block content %}
+    {{ heading('System Records',url_for('admin.dashboard') ) }}
+    <p class="muted">A history of important registrations, campaign changes and administrative decisions.</p>
+    <form class="search-form" method="get">
+        <label class="sr-only" for="record-search">Search system records</label>
+        <input type="search"
+               id="record-search"
+               name="q"
+               placeholder="Search actions, actors, or affected records"
+               value="{{ request.args.get('q', '') }}">
+        <button class="button">Search</button>
+    </form>
+    {% include 'components/records.html' %}
+{% endblock %}

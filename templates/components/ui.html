@@ -1,0 +1,91 @@
+{% macro field(name, label, value='', type='text', required=true, maxlength=150, hint='') %}
+    <label class="field" for="{{ name }}">
+        <span>{{ label }}
+            {% if not required %}<small>(optional)</small>{% endif %}
+        </span>
+        <input id="{{ name }}"
+               name="{{ name }}"
+               type="{{ type }}"
+               value="{{ request.form.get(name, value) }}"
+               {% if required %}required{% endif %}
+               maxlength="{{ maxlength }}"
+               {% if type == 'password' %}minlength="8" autocomplete="{{ 'current-password' if name == 'password' and request.endpoint == 'auth.login' else 'new-password' }}"{% endif %}>
+        {% if hint %}<small>{{ hint }}</small>{% endif %}
+    </label>
+{% endmacro %}
+{% macro textarea(name, label, value='', required=true, maxlength=5000, minlength=1) %}
+    <label class="field" for="{{ name }}">
+        <span>{{ label }}
+            {% if not required %}<small>(optional)</small>{% endif %}
+        </span><textarea id="{{ name }}" name="{{ name }}" rows="4" maxlength="{{ maxlength }}" minlength="{{ minlength }}" {% if required %}required{% endif %}>{{ request.form.get(name, value) }}</textarea>
+    </label>
+{% endmacro %}
+{% macro csrf() %}
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+{% endmacro %}
+{% macro badge(status) %}
+    <span class="badge {{ status }}">{{ status|replace('_', ' ') |title }}</span>
+{% endmacro %}
+{% macro avatar(person, large=false) %}
+    <span class="avatar {{ 'large' if large else '' }}">
+        {% if person.image is defined and person.image %}
+            <img src="{{ image_url(person.image) }}" alt="{{ person.name }}">
+        {% elif person.logo is defined and person.logo %}
+            <img src="{{ image_url(person.logo) }}" alt="{{ person.name }} logo">
+        {% else %}
+            {{ person.initials }}
+        {% endif %}
+    </span>
+{% endmacro %}
+{% macro heading(title, back='') %}
+    <div class="page-heading">
+        {% if back %}
+            <a class="back" href="{{ back }}" aria-label="Go back">
+                <img src="{{ url_for('static',filename='icons/back.svg') }}" alt="">
+            </a>
+        {% endif %}
+        <h1>{{ title }}</h1>
+    </div>
+{% endmacro %}
+{% macro empty(title='Nothing here yet', description='Explore a cause and take your first step toward making a difference.', link='/causes', label='Explore causes') %}
+    <section class="empty card">
+        <h2>{{ title }}</h2>
+        <p>{{ description }}</p>
+        {% if link %}<a class="button secondary" href="{{ link }}">{{ label }}</a>{% endif %}
+    </section>
+{% endmacro %}
+{% macro progress(f) %}
+    <div class="progress">
+        <progress value="{{ f.progress }}"
+                  max="100"
+                  aria-label="{{ f.progress }}% of goal raised">{{ f.progress }}%</progress><span>{{ f.progress }}%</span>
+    </div>
+    <div class="progress-label">
+        <strong>{{ f.raised_cents|peso }} raised</strong><span>{{ f.goal_cents|peso }} goal</span>
+    </div>
+{% endmacro %}
+{% macro fundraiser_card(f, management=false) %}
+    <article class="fundraiser-card"><a class="campaign-main"
+   href="{{ url_for('organization.manage',fid=f.id) if management else url_for('goer.fundraiser',fid=f.id) }}">
+        <img class="campaign-thumb"
+             src="{{ image_url(f.cover_image) }}"
+             alt="{{ f.title }}">
+        <div class="campaign-copy">
+            <small>{{ f.category }}</small>
+            <h3>{{ f.title }}</h3>
+            <p>{{ f.organization.name }}</p>
+            <p class="clamp">{{ f.impact }}</p>
+        </div>
+    </a>{{ progress(f) }}
+    <div class="card-foot">
+        {{ badge(f.display_status) }}<a href="{{ url_for('organization.manage',fid=f.id) if management else url_for('goer.fundraiser',fid=f.id) }}">{{ 'Manage fundraiser' if management else 'View fundraiser' }} <span aria-hidden="true">→</span></a>
+    </div>
+</article>
+{% endmacro %}
+{% macro upload(name, label, hint='JPG or PNG · maximum 3 MB', accept='.jpg,.jpeg,.png') %}
+    <label class="field upload" for="{{ name }}">
+        <span>{{ label }}</span>
+        <input id="{{ name }}" name="{{ name }}" type="file" accept="{{ accept }}">
+        <small>{{ hint }}</small><span class="file-feedback" aria-live="polite"></span>
+    </label>
+{% endmacro %}

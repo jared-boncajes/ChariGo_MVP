@@ -1,0 +1,78 @@
+{% extends 'base.html' %}{% from 'components/ui.html' import heading,avatar,badge,csrf,fundraiser_card,empty with context %}
+{% block content %}
+    <div class="narrow-wide">
+        {{ heading('Organization',url_for('goer.causes') ) }}
+        <img class="organization-banner"
+             src="{{ image_url(org.banner) }}"
+             alt="{{ org.name }} community">
+        <section class="organization-identity card">
+            {{ avatar(org) }}
+            <div>
+                <h1>{{ org.name }}</h1>
+                {{ badge(org.verification_status) }}
+                <p>{{ org.location }}</p>
+            </div>
+        </section>
+        <nav class="tabs" aria-label="Organization sections">
+            {% for key,label in [('about','About'),('campaigns','Campaigns'),('contact','Contact')] %}
+                <a href="{{ url_for('goer.organization',oid=org.id,tab=key) }}"
+                   {% if key == tab %}aria-current="page"{% endif %}>{{ label }}</a>
+            {% endfor %}
+        </nav>
+        {% if tab == 'about' %}
+            <div class="two-columns">
+                <section class="card">
+                    <h2>About Us</h2>
+                    <p class="preserve">{{ org.description }}</p>
+                </section>
+                <section class="card">
+                    <h2>Mission</h2>
+                    <p class="preserve">{{ org.mission }}</p>
+                </section>
+            </div>
+        {% elif tab == 'campaigns' %}
+            <div class="campaign-grid">
+                {% for f in campaigns %}
+                    {{ fundraiser_card(f) }}
+                {% else %}
+                    {{ empty('No active campaigns', 'This organization has no open campaigns right now.') }}
+                {% endfor %}
+            </div>
+        {% else %}
+            <section class="card">
+                <h2>Contact</h2>
+                <dl>
+                    <dt>Email</dt>
+                    <dd>
+                        {% if org.contact_email %}
+                            <a href="mailto:{{ org.contact_email }}">{{ org.contact_email }}</a>
+                        {% else %}
+                            Not provided
+                        {% endif %}
+                    </dd>
+                    <dt>Phone</dt>
+                    <dd>
+                        {{ org.phone or 'Not provided' }}
+                    </dd>
+                    <dt>Location</dt>
+                    <dd>
+                        {{ org.location or 'Not provided' }}
+                    </dd>
+                </dl>
+            </section>
+        {% endif %}
+        <div class="actions">
+            {% if campaigns %}
+                <a class="button"
+                   href="{{ url_for('goer.fundraiser',fid=campaigns[0].id) }}">Donate Now</a>
+            {% endif %}
+            {% if current_user and current_user.role == 'charity_goer' %}
+                <form method="post"
+                      action="{{ url_for('goer.save_organization',oid=org.id) }}">
+                    {{ csrf() }}
+                    <button class="button secondary">{{ 'Unsave charity' if saved else 'Save charity' }}</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

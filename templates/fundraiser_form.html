@@ -1,0 +1,51 @@
+{% extends 'base.html' %}{% from 'components/ui.html' import heading,field,textarea,upload,csrf with context %}
+{% block content %}
+    <div class="narrow">
+        {{ heading(title,url_for('organization.manage',fid=fundraiser.id) if fundraiser else url_for('organization.fundraisers')) }}
+        <form method="post" enctype="multipart/form-data">
+            {{ csrf() }}{{ upload('cover_image', 'Campaign Image') }}
+            {% if fundraiser %}
+                <img class="image-preview"
+                     src="{{ image_url(fundraiser.cover_image) }}"
+                     alt="Current fundraiser cover">
+            {% endif %}
+            {{ field('title','Fundraiser title',fundraiser.title if fundraiser else '') }}
+            <label class="field">
+                <span>Category</span>
+                <select name="category" required>
+                    {% for category in categories %}
+                        <option {% if request.form.get('category',fundraiser.category if fundraiser else '') == category %}selected{% endif %}>
+                            {{ category }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </label>
+            {{ textarea('description','About the campaign',fundraiser.description if fundraiser else '',minlength=20) }}{{ textarea('impact','Your donation will help',fundraiser.impact if fundraiser else '',maxlength=500,minlength=10) }}{{ field('goal','Goal amount (₱)',fundraiser.goal_cents/100 if fundraiser else '',type='number',hint='From ₱1 to ₱10,000,000; up to two decimal places') }}{{ field('location','Location',fundraiser.location if fundraiser else '') }}
+            <div class="two-columns">
+                {{ field('start_date','Start date',fundraiser.start_date.isoformat() if fundraiser else '',type='date') }}{{ field('end_date','End date',fundraiser.end_date.isoformat() if fundraiser else '',type='date') }}
+            </div>
+            <fieldset class="volunteer-fields">
+                <legend>Volunteer Opportunity</legend>
+                {% set op = fundraiser.opportunity if fundraiser else none %}
+                <label class="checkbox">
+                    <input id="enable-volunteers"
+                           type="checkbox"
+                           name="volunteers"
+                           {% if request.form.get('volunteers') or (request.method == 'GET' and op) %}checked{% endif %}>
+                    Invite volunteers to this fundraiser
+                </label>
+                <div id="volunteer-options">
+                    {{ field('slots','Volunteer slots',op.slots if op else '',type='number',required=false,hint='1–10,000, including already accepted volunteers') }}{{ field('event_date','Volunteer event date',op.event_date.isoformat() if op else '',type='date',required=false) }}{{ textarea('volunteer_description','What to expect',op.description if op else '',required=false,maxlength=3000) }}{{ textarea('requirements','Volunteer requirements',op.requirements if op else '',required=false,maxlength=2000) }}
+                    {% if op and op.status != 'active' %}
+                        <p class="notice">This opportunity is {{ op.status }}. Editing does not reactivate it; contact the administrator.</p>
+                    {% endif %}
+                </div>
+            </fieldset>
+            <div class="actions">
+                <a class="button secondary"
+                   href="{{ url_for('organization.fundraisers') }}">Cancel</a>
+                <button class="button">{{ 'Save Changes' if fundraiser else 'Create Fundraiser' }}</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

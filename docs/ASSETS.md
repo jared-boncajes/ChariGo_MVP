@@ -1,0 +1,22 @@
+# Original Figma assets
+
+All images below are byte-for-byte copies from the uploaded `.fig` ZIP; original SHA-1 image identifiers are retained here for traceability. The application needs no Figma API token or runtime access to Figma.
+
+| Local image | Original image hash |
+|---|---|
+| `static/images/logo.png` | `c2b1215fe542433bbb59da1da3a23663dab02982` |
+| `static/images/angat-buhay.jpg` | `b126be4bfbaa5b9d758ac489af6b38032bb0ccdf` |
+| `static/images/children.png` | `3db208b6f0bc850a4c7d945bdef640e4b6044217` |
+| `static/images/iwas-gutom.png` | `a8a959c3e0afb9bd23078cba41d1a4bc8378c793` |
+| `static/images/health.png` | `a493ed1e82d674d1c13cce55193cc7866227ea54` |
+| `static/images/environment.png` | `f2547037e4f8900824f7b965a95e6770f12596b7` |
+| `static/images/water.png` | `82e90becde905630b86a7dd8944d45082626888e` |
+| `static/images/education.png` | `25f84621cc7daca5ced474766825a9723b15b40e` |
+| `static/images/animals.png` | `d88a4c6179ecf730e48dceab95c0523268a88a5e` |
+| `static/images/community.png` | `704f610eba858b30ab16eb407b13c2d79d726e3d` |
+| `static/images/relief.png` | `870f9c11a1580e83066a9fefbe3b44e342160da6` |
+| `static/images/hunger.png` | `e0c6e0dc26069b9cfa1773c3ae39917ab4ebb1f5` |
+
+Vector icons were exported from the original `fillGeometry` / `strokeGeometry` path blobs. Sources: home 111:116; explore 111:119 (group); profile 111:127; role goer 144:108; role organization 144:112; search 75:40; back 75:122; categories Animal Welfare 75:138, Children 75:142, Health 75:149, Education 75:162, Hunger & Poverty 75:199, Environment 75:204. Vector paths are preserved rather than substituted with generic icons.
+
+Inter Latin variable font is bundled locally from `@fontsource-variable/inter`, with its OFL license in `static/fonts/OFL.txt`. All body text remains real HTML text for screen readers. Layout, button states and added UI use CSS, not rasterized Figma screens. No stock-photo or generated-image substitutions were used.

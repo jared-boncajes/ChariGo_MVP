@@ -1,0 +1,51 @@
+{% set auth_page = true %}{% extends 'base.html' %}{% from 'components/ui.html' import field,csrf with context %}
+{% block content %}
+    <section class="auth-panel">
+        <a class="auth-brand" href="{{ url_for('goer.welcome') }}">
+            <img class="auth-logo"
+                 src="{{ image_url('logo.png') }}"
+                 alt="ChariGo home">
+        </a>
+        <h1>{{ 'Welcome back' if mode == 'login' else 'Create Account' }}</h1>
+        <p class="auth-subtitle">
+            {{ 'Let’s get you in to ChariGo' if mode == 'login' else 'Join ChariGo. Join the bigger change.' }}
+        </p>
+        <form method="post">
+            {{ csrf() }}
+            {% if mode == 'register' %}
+                <input type="hidden" name="role" value="{{ role }}">
+                {{ field('name','Full name',maxlength=100) }}
+            {% endif %}
+            {{ field('email','Email address',type='email',maxlength=254) }}
+            <div class="password-field">
+                {{ field('password','Password',type='password',maxlength=128,hint='At least 8 characters' if mode == 'register' else '') }}
+                <button type="button"
+                        class="password-toggle text-link"
+                        data-toggle-password="password"
+                        aria-label="Show password">Show</button>
+            </div>
+            {% if mode == 'register' %}{{ field('confirm_password','Confirm password',type='password',maxlength=128) }}{% endif %}
+            <button class="button full"
+                    data-processing="{{ 'Logging in…' if mode == 'login' else 'Creating account…' }}">
+                {{ 'Log In' if mode == 'login' else 'Create Account' }}
+            </button>
+        </form>
+        <p class="auth-switch">
+            {% if mode == 'login' %}
+                Don’t have an account? <a href="{{ url_for('auth.choose_role') }}">Sign Up</a>
+            {% else %}
+                Already have an account? <a href="{{ url_for('auth.login') }}">Log In</a>
+            {% endif %}
+        </p>
+        <details class="demo-info">
+            <summary>Try a demo account</summary>
+            <p>
+                Use <strong>goer@example.com</strong>, <strong>organization@example.com</strong>, or <strong>admin@example.com</strong>.
+            </p>
+            <p>
+                Password: <strong>ChariGo123!</strong>
+            </p>
+            <small>Demo payments are simulated. Email login is available; social sign-in is outside this demo.</small>
+        </details>
+    </section>
+{% endblock %}

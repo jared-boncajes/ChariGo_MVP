@@ -1,0 +1,59 @@
+{% extends 'base.html' %}{% from 'components/ui.html' import avatar,badge with context %}
+{% block content %}
+    <div class="narrow-wide">
+        <section class="profile-heading">
+            {{ avatar(org,true) }}
+            <h1>{{ org.name }}</h1>
+            {{ badge(org.verification_status) }}
+        </section>
+        {% if org.verification_status != 'verified' %}
+            <section class="notice">
+                <h2>
+                    {{ 'Please Wait!' if org.verification_status == 'pending' else 'Organization '+org.verification_status|title }}
+                </h2>
+                <p>
+                    {% if org.verification_status == 'pending' %}
+                        Complete your organization profile and submit it for review. Your verification status will appear here. Creating fundraisers is available after administrator approval.
+                    {% elif org.verification_status == 'rejected' %}
+                        Your registration needs changes. {{ org.rejection_reason }} Update your profile to resubmit for verification.
+                    {% else %}
+                        This organization is inactive. Contact the administrator before posting campaigns.
+                    {% endif %}
+                </p>
+                <a href="{{ url_for('organization.profile') }}">{{ 'Complete organization registration' if org.verification_status == 'pending' else 'Edit organization details' }} →</a>
+            </section>
+        {% endif %}
+        <h2>Organization Overview</h2>
+        <div class="stats-grid">
+            <div class="stat">
+                <strong>{{ org.fundraisers|selectattr("accepting") |list|length }}</strong><span>Active Fundraisers</span>
+            </div>
+            <div class="stat">
+                <strong>{{ org.fundraisers|sum(attribute='raised_cents') |peso }}</strong><span>Total Raised</span>
+            </div>
+            <div class="stat">
+                <strong>{{ org.fundraisers|map(attribute='opportunity') |reject('none')|sum(attribute='accepted_count') }}</strong><span>Volunteers</span>
+            </div>
+        </div>
+        <div class="two-columns">
+            <section>
+                <h2>Fundraiser Management</h2>
+                <div class="stack">
+                    <a class="action-row" href="{{ url_for('organization.fundraisers') }}">Current Fundraisers <span>›</span></a><a class="action-row"
+   href="{{ url_for('organization.fundraisers',status='past') }}">Past Fundraisers <span>›</span></a>
+                    {% if org.public %}
+                        <a class="action-row"
+                           href="{{ url_for('organization.edit_fundraiser') }}">Create Fundraiser <span>›</span></a>
+                    {% endif %}
+                    <a class="action-row" href="{{ url_for('organization.profile') }}">Edit Organization <span>›</span></a><a class="action-row" href="{{ url_for('goer.profile') }}">My Account / Log out <span>›</span></a>
+                </div>
+            </section>
+            <section class="card">
+                <h2>About</h2>
+                <p class="preserve">{{ org.description or 'Tell us about your organization in your profile.' }}</p>
+                <h2>Mission</h2>
+                <p class="preserve">{{ org.mission or 'Add your mission to complete your registration.' }}</p>
+            </section>
+        </div>
+    </div>
+{% endblock %}

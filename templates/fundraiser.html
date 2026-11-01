@@ -1,0 +1,94 @@
+{% extends 'base.html' %}{% from 'components/ui.html' import heading,progress,badge with context %}
+{% block content %}
+    <div class="narrow-wide">
+        {{ heading('Manage Fundraiser' if manage else 'Fundraiser',url_for('organization.fundraisers') if manage else url_for('goer.causes')) }}
+        <div class="detail-grid">
+            <img class="detail-cover"
+                 src="{{ image_url(fundraiser.cover_image) }}"
+                 alt="{{ fundraiser.title }}">
+            <section class="detail-copy">
+                {{ badge(fundraiser.display_status) }}
+                <h1>{{ fundraiser.title }}</h1>
+                <a class="muted"
+                   href="{{ url_for('goer.organization',oid=fundraiser.organization.id) }}">{{ fundraiser.organization.name }}</a>
+                <p class="location">{{ fundraiser.category }} · {{ fundraiser.location }}</p>
+                {{ progress(fundraiser) }}
+                <div class="impact-panel">
+                    <h2>Your donation will help</h2>
+                    <p>{{ fundraiser.impact }}</p>
+                </div>
+            </section>
+        </div>
+        <div class="detail-grid body-grid">
+            <section>
+                <h2>About the campaign</h2>
+                <p class="preserve">{{ fundraiser.description }}</p>
+                <div class="card">
+                    <h2>Fundraiser Details</h2>
+                    <dl>
+                        <dt>Campaign dates</dt>
+                        <dd>
+                            {{ fundraiser.start_date|localdate }} – {{ fundraiser.end_date|localdate }}
+                        </dd>
+                        <dt>Location</dt>
+                        <dd>
+                            {{ fundraiser.location }}
+                        </dd>
+                        <dt>Goal amount</dt>
+                        <dd>
+                            {{ fundraiser.goal_cents|peso }}
+                        </dd>
+                        {% if fundraiser.opportunity %}
+                            <dt>Volunteer date</dt>
+                            <dd>
+                                {{ fundraiser.opportunity.event_date|localdate }}
+                            </dd>
+                            <dt>Accepted volunteers</dt>
+                            <dd>
+                                {{ fundraiser.opportunity.accepted_count }} / {{ fundraiser.opportunity.slots }}
+                            </dd>
+                        {% endif %}
+                    </dl>
+                </div>
+            </section>
+            <section class="action-panel">
+                {% if manage %}
+                    <h2>Fundraiser Management</h2>
+                    <div class="stack">
+                        {% if fundraiser.organization.public and fundraiser.moderation_status == 'active' and fundraiser.status != 'inactive' %}
+                            <a class="button"
+                               href="{{ url_for('organization.edit_fundraiser',fid=fundraiser.id) }}">Edit Fundraiser</a>
+                        {% else %}
+                            <p class="notice">Editing is unavailable while this campaign or organization is inactive or moderated.</p>
+                        {% endif %}
+                        <a class="button secondary"
+                           href="{{ url_for('organization.applications',fid=fundraiser.id) }}">Check Volunteers</a>
+                        {% if fundraiser.status == 'active' and fundraiser.organization.public %}
+                            <a class="button secondary"
+                               href="{{ url_for('organization.campaign_action',fid=fundraiser.id,action='complete') }}">Mark as completed</a><a class="button danger"
+   href="{{ url_for('organization.campaign_action',fid=fundraiser.id,action='deactivate') }}">Deactivate Fundraiser</a>
+                        {% endif %}
+                    </div>
+                {% elif fundraiser.accepting %}
+                    <h2>Be part of the change</h2>
+                    <p>A contribution of any size can make a difference.</p>
+                    {% if not current_user or current_user.role == 'charity_goer' %}
+                        <div class="actions">
+                            <a class="button" href="{{ url_for('goer.donate',fid=fundraiser.id) }}">Donate</a>
+                            {% if fundraiser.opportunity and fundraiser.opportunity.available %}
+                                <a class="button secondary"
+                                   href="{{ url_for('goer.opportunity',oid=fundraiser.opportunity.id) }}">Volunteer</a>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <p class="notice">Use a Charity Goer account to donate or apply as a volunteer.</p>
+                    {% endif %}
+                    <p class="fine-print">This is a demo. All donations use simulated payments.</p>
+                {% else %}
+                    <div class="notice">This fundraiser is currently closed. Thank you for supporting this community.</div>
+                    <a class="button secondary" href="{{ url_for('goer.causes') }}">Explore other causes</a>
+                {% endif %}
+            </section>
+        </div>
+    </div>
+{% endblock %}

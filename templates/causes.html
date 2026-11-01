@@ -1,0 +1,61 @@
+{% extends 'base.html' %}{% from 'components/ui.html' import heading,fundraiser_card,empty with context %}
+{% block content %}
+    {{ heading('Explore Charities',url_for('goer.home') ) }}
+    <form class="filter-form" method="get">
+        <label class="field search-field">
+            <span>Search causes</span>
+            <input name="q"
+                   type="search"
+                   value="{{ q }}"
+                   placeholder="Search charities, causes, or a location">
+        </label>
+        <label class="field">
+            <span>Organization</span>
+            <select name="organization">
+                <option value="">All organizations</option>
+                {% for org in organizations %}
+                    <option value="{{ org.id }}"
+                            {% if organization_id == org.id %}selected{% endif %}>{{ org.name }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label class="field">
+            <span>Category</span>
+            <select name="category">
+                <option value="">All categories</option>
+                {% for category in categories %}
+                    <option {% if selected_category == category %}selected{% endif %}>{{ category }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label class="checkbox">
+            <input type="checkbox"
+                   name="volunteer"
+                   value="1"
+                   {% if request.args.get('volunteer') %}checked{% endif %}>
+            Volunteers needed
+        </label>
+        <button class="button">Search</button>
+        <a class="text-link" href="{{ url_for('goer.causes') }}">Reset</a>
+    </form>
+    <h2>Categories</h2>
+    <div class="categories">
+        {% for label,icon in categories.items() %}
+            <a class="category {{ 'selected' if label == selected_category else '' }}"
+               href="{{ url_for('goer.causes',category=label) }}">
+                <img src="{{ url_for('static',filename='icons/'+icon+'.svg') }}" alt="">
+                <span>{{ label }}</span></a>
+        {% endfor %}
+    </div>
+    <div class="section-heading">
+        <h2>{{ 'Matching causes' if q or selected_category or organization_id else 'Causes to care about' }}</h2>
+        <span class="muted">{{ campaigns|length }} fundraiser{{ '' if campaigns|length == 1 else 's' }}</span>
+    </div>
+    <div class="campaign-grid">
+        {% for f in campaigns %}
+            {{ fundraiser_card(f) }}
+        {% else %}
+            {{ empty('No causes match your search','Try another search or clear the filters.',url_for('goer.causes') ,'Clear filters') }}
+        {% endfor %}
+    </div>
+{% endblock %}

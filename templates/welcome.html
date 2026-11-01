@@ -1,0 +1,22 @@
+{% set auth_page = true %}{% extends 'base.html' %}
+{% block content %}
+    <div class="welcome-layout">
+        <div class="photo-collage" aria-label="Communities supported by ChariGo">
+            {% for image,alt in [('health.png','Community health outreach'),('environment.png','Young people planting a tree'),('water.png','Children washing their hands'),('animals.png','Care for rescued animals'),('education.png','Children learning together'),('hunger.png','Support for children facing hunger'),('relief.png','Community disaster response'),('angat-buhay.jpg','Angat Buhay community volunteers'),('community.png','Community outreach')] %}
+                <img src="{{ image_url(image) }}" alt="{{ alt }}">
+            {% endfor %}
+        </div>
+        <section class="welcome-copy">
+            <img class="auth-logo"
+                 src="{{ image_url('logo.png') }}"
+                 alt="ChariGo clover logo">
+            <h1>Welcome to ChariGo</h1>
+            <p class="muted welcome-description">
+                Small acts. A bigger change.
+                <br>
+                Discover a cause close to your heart.
+            </p>
+            <a class="button full" href="{{ url_for('auth.choose_role') }}">Sign up</a><a class="button secondary full" href="{{ url_for('auth.login') }}">Log in</a><a class="browse-link" href="{{ url_for('goer.home') }}">Explore causes first →</a>
+        </section>
+    </div>
+{% endblock %}

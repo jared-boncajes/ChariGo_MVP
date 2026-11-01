@@ -1,0 +1,709 @@
+[
+  {
+    "id": "1:5",
+    "name": "Welcome",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": ["Welcome to ChariGo", "Sign up", "Log in"]
+  },
+  {
+    "id": "47:39",
+    "name": "Log In",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": [
+      "Welcome back",
+      "Let\u2019s get you in to ChariGo ",
+      "Email or Phone",
+      "Password",
+      "Forgot Password?",
+      "Don\u2019t have an account? ",
+      "Sign Up",
+      "or",
+      "Log In",
+      "Continue with Google",
+      "Continue with Facebook"
+    ]
+  },
+  {
+    "id": "48:90",
+    "name": "Sign Up",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": [
+      "Create Account",
+      "Join ChariGo. \nJoin the bigger change.",
+      "Full Name",
+      "Email or Phone",
+      "Password",
+      "Confirm Password",
+      "Create Account",
+      "or",
+      "Already have an account?",
+      "Log In",
+      "Sign Up with Google",
+      "Sign Up with Facebook"
+    ]
+  },
+  {
+    "id": "59:5",
+    "name": "Choose ChariGo Usage",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": ["How will you use\n       ChariGo?", "Continue", "Continue"]
+  },
+  {
+    "id": "59:6",
+    "name": "Home Page",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": [
+      "ChariGo",
+      "Search",
+      "Featured Fundraisers",
+      "Featured Foundation ",
+      "60%",
+      "Featured Fundraisers",
+      "Dinner for the Unhoused",
+      " Iwas Gutom Society",
+      "Meal-prepping and cooking for the unhoused around Manila, followed up by cleaning, packing, and other required work",
+      "Bawat Batang Pinoy Malusog",
+      "Help children in the philippines to address the alarming child hunger ",
+      "60%",
+      "Join"
+    ]
+  },
+  {
+    "id": "59:8",
+    "name": "Search",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": [
+      "ChariGo",
+      "Explore Charities",
+      "Search Charities",
+      "All",
+      "Verified",
+      "Categories",
+      "Animal Welfare",
+      "Hunger & Poverty",
+      "Environment",
+      "Health",
+      "Children",
+      "Education",
+      "Education",
+      "Education",
+      "Education"
+    ]
+  },
+  {
+    "id": "59:14",
+    "name": "Donation Confirmation",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": [
+      "Back to Home",
+      "Thank You!",
+      "Your donation has been successfully sent to",
+      "Name Here",
+      "Reference No. :",
+      "Donation :",
+      "Date :",
+      "$XXXX.XX",
+      "XX/XX/XXXX",
+      "XXXXXXXXXX"
+    ]
+  },
+  {
+    "id": "59:15",
+    "name": "Volunteer Profile Page",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": [
+      "ChariGo",
+      "My Impact",
+      "Donation history",
+      "Volunteer history",
+      "Total Donations",
+      "$1,500",
+      "403",
+      "210",
+      "Volunteers",
+      "Saved Charity"
+    ]
+  },
+  {
+    "id": "59:16",
+    "name": "Volunteering Details",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": [
+      "Bawat Batang Pinoy Malusog",
+      "Angat Buhay Foundation",
+      "Location",
+      "Volunteers needed",
+      "Date",
+      "What to expect",
+      "Requirements",
+      "To join program,  contact \nXXXXXXXXXXXX\nXXXX@mail.com",
+      "\u2190",
+      "Volunteer Now"
+    ]
+  },
+  {
+    "id": "98:492",
+    "name": "Organization Information",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": [
+      "AB",
+      "Angat Buhay Foundation",
+      "Empowering Filipino communities",
+      "About",
+      "Campaigns",
+      "Contact",
+      "About Us",
+      "Angat Buhay works with communities to create lasting opportunities through education, health, livelihood, and disaster response initiatives.",
+      "Mission",
+      "Build resilient communities by connecting people with programs and resources that create meaningful, measurable impact.",
+      "Donate Now"
+    ]
+  },
+  {
+    "id": "98:531",
+    "name": "Charity Information",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": [
+      "\u2190",
+      "Bawat Batang Pinoy Malusog",
+      "Angat Buhay Foundation",
+      "Your donation will help",
+      "Provide nutritious meals and community support for Filipino children facing hunger and food insecurity.",
+      "About the campaign",
+      "This fundraiser supports community-based feeding activities and family-centered assistance. Donations help cover meals, supplies, logistics, and partner-led outreach so more children can receive consistent support.",
+      "Donate",
+      "Volunteer"
+    ]
+  },
+  {
+    "id": "98:559",
+    "name": "Donation Payment",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": [
+      "\u2190",
+      "Make a Donation",
+      "Donation amount",
+      "Payment Method",
+      "GCash",
+      "\u2713",
+      "Maya",
+      "Credit / Debit Card",
+      "PayPal",
+      "Others",
+      "Donate anonymously",
+      "Continue",
+      "Every contribution matters",
+      "Choose an amount that is comfortable for you."
+    ]
+  },
+  {
+    "id": "111:111",
+    "name": "Component 1",
+    "type": "FRAME",
+    "size": {
+      "x": 430,
+      "y": 448
+    },
+    "text": []
+  },
+  {
+    "id": "111:265",
+    "name": "Component 2",
+    "type": "FRAME",
+    "size": {
+      "x": 382,
+      "y": 140
+    },
+    "text": ["One Time", "Monthly", "One Time", "Monthly"]
+  },
+  {
+    "id": "111:291",
+    "name": "Donation Amount Grid",
+    "type": "FRAME",
+    "size": {
+      "x": 405,
+      "y": 691
+    },
+    "text": [
+      "\u20b1100",
+      "\u20b1250",
+      "\u20b1300",
+      "\u20b1500",
+      "\u20b11,500",
+      "Custom",
+      "\u20b1100",
+      "\u20b1250",
+      "\u20b1300",
+      "\u20b1500",
+      "\u20b11,500",
+      "Custom",
+      "\u20b1100",
+      "\u20b1250",
+      "\u20b1300",
+      "\u20b1500",
+      "\u20b11,500",
+      "Custom",
+      "\u20b1100",
+      "\u20b1250",
+      "\u20b1300",
+      "\u20b1500",
+      "\u20b11,500",
+      "Custom",
+      "\u20b1100",
+      "\u20b1250",
+      "\u20b1300",
+      "\u20b1500",
+      "\u20b11,500",
+      "Custom",
+      "\u20b1100",
+      "\u20b1250",
+      "\u20b1300",
+      "\u20b1500",
+      "\u20b11,500",
+      "Custom"
+    ]
+  },
+  {
+    "id": "140:504",
+    "name": "Volunteer Verification",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": [
+      "Back to Home",
+      "Thank You!",
+      "Your Volunteer Request has been sent we will\nnotify you for updates about your acceptance!"
+    ]
+  },
+  {
+    "id": "144:120",
+    "name": "Group 9",
+    "type": "FRAME",
+    "size": {
+      "x": 363,
+      "y": 1663.03271484375
+    },
+    "text": [
+      "Charity Goer",
+      "Donate, Volunteer, and\ndiscover charities.",
+      "Organizations",
+      "Create Campaings and \nfind volunteers",
+      "Continue",
+      "Continue",
+      "Charity Goer",
+      "Donate, Volunteer, and\ndiscover charities.",
+      "Organizations",
+      "Create Campaings and \nfind volunteers",
+      "Continue",
+      "Continue",
+      "Charity Goer",
+      "Donate, Volunteer, and\ndiscover charities.",
+      "Organizations",
+      "Create Campaings and \nfind volunteers",
+      "Continue",
+      "Continue"
+    ]
+  },
+  {
+    "id": "147:260",
+    "name": "Donation History",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": [
+      "Donation History",
+      "Total Donated",
+      "\u20b11,500",
+      "Across 3 donations",
+      "Recent donations"
+    ]
+  },
+  {
+    "id": "147:277",
+    "name": "Volunteer History",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": [
+      "Volunteer History",
+      "Completed Activities",
+      "3",
+      "Your recent volunteer participation",
+      "Recent activities",
+      "Community Feeding Drive",
+      "Angat Buhay Foundation",
+      "Pasig City",
+      "Aug 30, 2026",
+      "Completed"
+    ]
+  },
+  {
+    "id": "148:382",
+    "name": "Organization Registration",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": [
+      "Organization Registration",
+      "Provide your official organization details for verification.",
+      "Organization Logo",
+      "+",
+      "Upload organization logo",
+      "PNG or JPG \u2022 square image recommended",
+      "Organization Portfolio",
+      "FILE",
+      "Upload portfolio",
+      "PDF, DOC or DOCX \u2022 Max 10 MB",
+      "Choose File",
+      "Register Organization"
+    ]
+  },
+  {
+    "id": "148:423",
+    "name": "Volunteer Verification",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": [
+      "Go to Home",
+      "Thank You!",
+      "Your Organization Registration has been sent!\nPlease wait for further updates for your \napplication!"
+    ]
+  },
+  {
+    "id": "148:438",
+    "name": "Volunteer Verification",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": [
+      "Back to Log In",
+      "Please Wait!",
+      "Your Organization Registration is still being\u2028processed. Check your email for updates about\nyour application."
+    ]
+  },
+  {
+    "id": "151:472",
+    "name": "Organizer Profile",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": [
+      "AB",
+      "Angat Buhay Foundation",
+      "Verified organization",
+      "Organization Overview",
+      "3",
+      "Active Fundraisers",
+      "\u20b181.5K",
+      "Total Raised",
+      "124",
+      "Volunteers",
+      "Fundraiser Management",
+      "About",
+      "We connect communities with verified programs that support education, health, livelihood, and disaster response.",
+      "Mission",
+      "Create meaningful, transparent ways for people to help."
+    ]
+  },
+  {
+    "id": "151:511",
+    "name": "Create Fundraiser",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": [
+      "Create Fundraiser",
+      "Campaign Image",
+      "+",
+      "Upload fundraiser image",
+      "PNG or JPG \u2022 landscape recommended",
+      "Create Fundraiser"
+    ]
+  },
+  {
+    "id": "151:530",
+    "name": "Current Fundraisers",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": ["Your fundraisers", "AB", "ChariGo"]
+  },
+  {
+    "id": "151:628",
+    "name": "Group 12",
+    "type": "SYMBOL",
+    "size": {
+      "x": 342,
+      "y": 129
+    },
+    "text": ["Active", "Manage", "Bawat Batang Pinoy Malusog", "60%"]
+  },
+  {
+    "id": "151:700",
+    "name": "Group 11",
+    "type": "FRAME",
+    "size": {
+      "x": 430,
+      "y": 433
+    },
+    "text": []
+  },
+  {
+    "id": "152:796",
+    "name": "Manage Fundraiser",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": [
+      "Fundraiser Details",
+      "Event Date",
+      "Oct 24, 2026",
+      "Location",
+      "Quezon City",
+      "Goal Amount",
+      "\u20b130,000",
+      "Current Volunteers",
+      "3",
+      "About",
+      "Provide nutritious meals and community support for children facing food insecurity.",
+      "\u20b118,500 currently raised",
+      "Edit Fundraiser",
+      "Delete",
+      "Check Volunteers",
+      "Bawat Batang Pinoy Malusog",
+      "Angat Buhay Foundation",
+      "Active"
+    ]
+  },
+  {
+    "id": "152:832",
+    "name": "Volunteer Requests",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": [
+      "Volunteer Requests",
+      "Fundraiser",
+      "Bawat Batang Pinoy Malusog",
+      "2 pending requests",
+      "Pending volunteers"
+    ]
+  },
+  {
+    "id": "153:1204",
+    "name": "Volunteer Request 1",
+    "type": "FRAME",
+    "size": {
+      "x": 382,
+      "y": 404
+    },
+    "text": [
+      "Maria Santos",
+      "Pending",
+      "Requested Oct 18, 2026 \u2022 Quezon City",
+      "\u201cI would like to help with meal preparation and distribution.\u201d",
+      "Decline",
+      "View Applicant",
+      "Maria Santos",
+      "Accepted",
+      "Requested Oct 18, 2026 \u2022 Quezon City",
+      "\u201cI would like to help with meal preparation and distribution.\u201d",
+      "Decline",
+      "View Applicant"
+    ]
+  },
+  {
+    "id": "154:1229",
+    "name": "Volunteer Applicant Profile",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": [
+      "MS",
+      "Maria Santos",
+      "Volunteer Applicant \u2022 Pending Review",
+      "Personal Information",
+      "Email",
+      "maria.santos@email.com",
+      "Phone",
+      "+63 917 123 4567",
+      "Location",
+      "Quezon City",
+      "Availability",
+      "Weekends",
+      "Capabilities",
+      "Skills",
+      "\u2022 Meal preparation and food distribution\n\u2022 Packing and logistics support\n\u2022 Event registration and coordination\n\u2022 Community outreach",
+      "Experience",
+      "2 years of community volunteer work",
+      "Volunteer Activity",
+      "Volunteer history",
+      "\u203a",
+      "Accept",
+      "Decline"
+    ]
+  },
+  {
+    "id": "155:1488",
+    "name": "Past Fundraisers",
+    "type": "FRAME",
+    "size": {
+      "x": 390,
+      "y": 844
+    },
+    "text": [
+      "Past Fundraisers",
+      "Completed Fundraisers",
+      "3",
+      "Fundraising history"
+    ]
+  },
+  {
+    "id": "155:1550",
+    "name": "Past Fundraiser 1",
+    "type": "SYMBOL",
+    "size": {
+      "x": 342,
+      "y": 154
+    },
+    "text": [
+      "Bawat Batang Pinoy Malusog",
+      "Closed",
+      "Completed Oct 24, 2026",
+      "\u20b131,250 raised",
+      "\u20b130,000 goal",
+      "View"
+    ]
+  },
+  {
+    "id": "166:402",
+    "name": "Legend/Button",
+    "type": "FRAME",
+    "size": {
+      "x": 444,
+      "y": 64
+    },
+    "text": ["Continue", "Continue", "Continue", "Continue"]
+  },
+  {
+    "id": "166:403",
+    "name": "ChariGo Design Legend",
+    "type": "FRAME",
+    "size": {
+      "x": 980,
+      "y": 420
+    },
+    "text": [
+      "A mini design system for ChariGo",
+      "Use these variables, styles, and components consistently across the final design.",
+      "Color tokens",
+      "primary",
+      "#F77492",
+      "primary-soft",
+      "#FEB5C6",
+      "success",
+      "#03541C",
+      "text",
+      "#000000",
+      "text-muted",
+      "#535353",
+      "gray",
+      "#D9D9D9",
+      "surface",
+      "#FFFFFF",
+      "Spacing (8-point grid)",
+      "4",
+      "8",
+      "16",
+      "24",
+      "32",
+      "48",
+      "Type scale",
+      "Typeface: Inter",
+      "H1 \u00b7 28/34 bold",
+      "H2 \u00b7 20/24 bold",
+      "Section \u00b7 16/20 semibold",
+      "Body \u00b7 14/20 regular",
+      "Caption \u00b7 11/16 medium",
+      "Component: Button (variants)",
+      "Default",
+      "Hover",
+      "Disabled",
+      "Focus",
+      "Tip: keep new screens bound to these tokens so color, spacing, type, and button behavior stay consistent."
+    ]
+  }
+]

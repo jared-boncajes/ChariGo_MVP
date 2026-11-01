@@ -1,0 +1,21 @@
+{% extends 'base.html' %}{% from 'components/ui.html' import heading,csrf,field,textarea,upload with context %}
+{% block content %}
+    <div class="narrow">
+        {{ heading(title,url_for('organization.dashboard') ) }}
+        <p class="muted">Provide your official organization details for verification.</p>
+        <form method="post" enctype="multipart/form-data">
+            {{ csrf() }}{{ upload('logo', 'Organization Logo') }}{{ field('name','Organization name',org.name) }}{{ textarea('description','About your organization',org.description,minlength=20) }}{{ textarea('mission','Mission',org.mission,maxlength=2000,minlength=10) }}{{ field('contact_email','Contact email',org.contact_email,type='email',maxlength=254) }}{{ field('phone','Contact phone',org.phone,type='tel',required=false,maxlength=40) }}{{ field('location','Location',org.location) }}{{ textarea('portfolio','Organization portfolio / previous work',org.portfolio,required=false,maxlength=3000) }}{{ upload('portfolio_file', 'Organization Portfolio', 'PDF · maximum 10 MB · visible only to your organization and administrators', '.pdf') }}
+            {% if org.portfolio_file %}
+                <a class="text-link"
+                   href="{{ url_for('organization.portfolio',oid=org.id) }}">Download current portfolio</a>
+            {% endif %}
+            <div class="actions">
+                <a class="button secondary"
+                   href="{{ url_for('organization.dashboard') }}">Cancel</a>
+                <button class="button">
+                    {{ 'Submit Registration' if org.verification_status != 'verified' else 'Save Organization' }}
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}{% from 'components/ui.html' import heading,avatar,badge with context %}
+{% block content %}
+    <div class="narrow">
+        {{ heading('Applicant Profile',url_for('organization.applications',fid=application.opportunity.fundraiser_id) ) }}
+        <section class="profile-heading">
+            {{ avatar(applicant,true) }}
+            <h1>{{ applicant.name }}</h1>
+            <p>Volunteer Applicant · {{ badge(application.status) }}</p>
+        </section>
+        <h2>Personal Information</h2>
+        <div class="card">
+            <dl>
+                <dt>Email</dt>
+                <dd>
+                    {{ applicant.email }}
+                </dd>
+                <dt>Phone</dt>
+                <dd>
+                    {{ applicant.phone or 'Not provided' }}
+                </dd>
+                <dt>Location</dt>
+                <dd>
+                    {{ applicant.location or 'Not provided' }}
+                </dd>
+                <dt>Availability</dt>
+                <dd>
+                    {{ applicant.availability or 'Not provided' }}
+                </dd>
+            </dl>
+        </div>
+        <h2>Capabilities</h2>
+        <section class="card">
+            <h3>Skills</h3>
+            <p class="preserve">{{ applicant.skills or 'No skills added yet.' }}</p>
+            <h3>Experience</h3>
+            <p class="preserve">{{ applicant.experience or 'No experience added yet.' }}</p>
+        </section>
+        <section class="card">
+            <h2>Application Message</h2>
+            <p class="preserve">{{ application.message }}</p>
+        </section>
+        <details class="card">
+            <summary>Volunteer history</summary>
+            {% for a in applicant.applications %}
+                <p>{{ a.opportunity.title }} · {{ badge(a.status) }} · {{ a.opportunity.event_date|localdate }}</p>
+            {% endfor %}
+        </details>
+        {% if application.status == 'pending' %}
+            <div class="actions">
+                <a class="button"
+                   href="{{ url_for('organization.decide',aid=application.id,decision='accept') }}">Accept</a><a class="button secondary"
+   href="{{ url_for('organization.decide',aid=application.id,decision='reject') }}">Decline</a>
+            </div>
+        {% else %}
+            <p class="notice">This application has been reviewed. The applicant can see the decision in their history.</p>
+        {% endif %}
+    </div>
+{% endblock %}

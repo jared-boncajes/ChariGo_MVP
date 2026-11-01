@@ -1,0 +1,32 @@
+{% extends 'base.html' %}{% from 'components/ui.html' import heading,badge,empty with context %}
+{% block content %}
+    <div class="narrow-wide">
+        {{ heading('Volunteer Requests',url_for('organization.manage',fid=fundraiser.id) ) }}
+        <div class="impact-panel">
+            <small>Fundraiser</small>
+            <h2>{{ fundraiser.title }}</h2>
+            <p>{{ applications|selectattr('status', 'equalto', 'pending') |list|length }} pending requests in this view</p>
+        </div>
+        <nav class="tabs" aria-label="Application status">
+            {% for s in ['','pending','accepted','rejected'] %}
+                <a href="{{ url_for('organization.applications',fid=fundraiser.id,status=s) }}"
+                   {% if status == s %}aria-current="page"{% endif %}>{{ s|title if s else 'All' }}</a>
+            {% endfor %}
+        </nav>
+        <div class="two-columns">
+            {% for a in applications %}
+                <article class="card">
+                    <div class="row-between">
+                        <h2>{{ a.user.name }}</h2>
+                        {{ badge(a.status) }}
+                    </div>
+                    <p class="muted">Requested {{ a.created_at|localdate }} · {{ a.user.location or 'Location not provided' }}</p>
+                    <p class="preserve">“{{ a.message }}”</p>
+                    <a class="button full"
+                       href="{{ url_for('organization.applicant',aid=a.id) }}">View Applicant</a></article>
+            {% else %}
+                {{ empty('No applications in this view','Volunteer requests will appear here when people apply.',url_for('organization.manage',fid=fundraiser.id) ,'Back to fundraiser') }}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
