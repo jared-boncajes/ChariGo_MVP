@@ -348,9 +348,9 @@ button:disabled {
 }
 .fundraiser-card {
   padding: 18px;
-  background: var(--pink);
+  background: var(--paper);
   border-radius: 18px;
-  border: 1px solid var(--pink);
+  border: 2px solid var(--pink);
   min-width: 0;
 }
 .campaign-main {
@@ -400,27 +400,28 @@ button:disabled {
   margin: 16px 0 5px;
 }
 .progress progress {
+  appearance: none;
   width: 100%;
   flex: 1;
   min-width: 0;
   display: block;
-  height: 9px;
-  border: none;
-  border-radius: 4px;
+  height: 12px;
+  border: 1.5px solid var(--pink);
+  border-radius: 999px;
   overflow: hidden;
-  background: var(--gray);
+  background: var(--paper);
 }
-progress::-webkit-progress-bar {
-  background: #fff;
-  border-radius: 10px;
+.progress progress::-webkit-progress-bar {
+  background: var(--paper);
+  border-radius: 999px;
 }
-progress::-webkit-progress-value {
+.progress progress::-webkit-progress-value {
   background: var(--soft);
-  border-radius: 10px;
+  border-radius: 999px;
 }
-progress::-moz-progress-bar {
+.progress progress::-moz-progress-bar {
   background: var(--soft);
-  border-radius: 10px;
+  border-radius: 999px;
 }
 .progress > span {
   font-size: 12px;
@@ -551,6 +552,33 @@ progress::-moz-progress-bar {
 .filter-form > a {
   padding: 12px;
 }
+.cause-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.cause-filters .field input,
+.cause-filters .field select {
+  height: 46px;
+}
+.filter-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.filter-actions .checkbox {
+  margin: 0;
+  min-height: 46px;
+}
+.filter-buttons {
+  display: flex;
+  gap: 12px;
+}
+.filter-buttons .button {
+  min-height: 46px;
+}
 .field {
   display: flex;
   flex-direction: column;
@@ -635,10 +663,11 @@ input[type="radio"] {
   margin: 20px 0 32px;
 }
 .category {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: 64px minmax(36px, auto);
   align-items: center;
-  gap: 10px;
+  justify-items: center;
+  gap: 8px;
   color: var(--text);
   font-size: 12px;
   text-align: center;
@@ -650,6 +679,15 @@ input[type="radio"] {
   width: 64px;
   height: 64px;
   object-fit: contain;
+}
+.category > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 .category:hover,
 .category.selected {
@@ -1445,6 +1483,20 @@ dialog h2 {
   .filter-form select {
     font-size: 12px;
     padding: 12px 8px;
+  }
+  .cause-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cause-filters .search-field {
+    grid-column: 1 / -1;
+  }
+  .filter-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .filter-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .two-columns,
   .detail-grid {

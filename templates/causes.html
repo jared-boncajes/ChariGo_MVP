@@ -1,7 +1,7 @@
 {% extends 'base.html' %}{% from 'components/ui.html' import heading,fundraiser_card,empty with context %}
 {% block content %}
     {{ heading('Explore Charities',url_for('goer.home') ) }}
-    <form class="filter-form" method="get">
+    <form class="filter-form cause-filters" method="get">
         <label class="field search-field">
             <span>Search causes</span>
             <input name="q"
@@ -28,15 +28,19 @@
                 {% endfor %}
             </select>
         </label>
-        <label class="checkbox">
-            <input type="checkbox"
-                   name="volunteer"
-                   value="1"
-                   {% if request.args.get('volunteer') %}checked{% endif %}>
-            Volunteers needed
-        </label>
-        <button class="button">Search</button>
-        <a class="text-link" href="{{ url_for('goer.causes') }}">Reset</a>
+        <div class="filter-actions">
+            <label class="checkbox">
+                <input type="checkbox"
+                       name="volunteer"
+                       value="1"
+                       {% if request.args.get('volunteer') %}checked{% endif %}>
+                Volunteers needed
+            </label>
+            <div class="filter-buttons">
+                <button class="button" type="submit">Search</button>
+                <a class="button secondary" href="{{ url_for('goer.causes') }}">Reset</a>
+            </div>
+        </div>
     </form>
     <h2>Categories</h2>
     <div class="categories">
