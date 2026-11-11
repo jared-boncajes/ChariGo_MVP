@@ -225,6 +225,21 @@ def create_app(test_config=None):
         seed_database()
         click.echo("Demo data is ready. Existing records preserved.")
 
+    @app.cli.command("restore-demo")
+    def restore_demo():
+        """Repair the demo logins; all other data is kept."""
+        from seed import DEMO_PASSWORD, restore_demo_accounts
+
+        db.create_all()
+        outcome = restore_demo_accounts()
+        if outcome == "missing":
+            click.echo(
+                "This database has accounts but no demo accounts. To replace it "
+                "with the demo data, run: flask --app app reset-db"
+            )
+        else:
+            click.echo(f"Demo accounts are ready. Password: {DEMO_PASSWORD}")
+
     @app.cli.command("reset-db")
     @click.confirmation_option(prompt="Delete all local data and restore the demo?")
     def reset_db():

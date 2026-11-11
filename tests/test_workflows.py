@@ -33,7 +33,7 @@ def test_seed_is_repeatable_and_hashes_passwords(app):
 def test_auth_registration_validation_and_logout(client, app):
     assert client.get("/profile").status_code == 302
     assert (
-        b"Incorrect email"
+        b"password is not correct"
         in post(
             client, "/login", {"email": "goer@example.com", "password": "wrong"}
         ).data
@@ -444,7 +444,7 @@ def test_admin_deactivate_and_reactivate_live_account(client, app):
     )
     assert goer.get("/profile").status_code == 302
     assert (
-        b"inactive"
+        b"deactivated"
         in post(
             goer, "/login", {"email": "goer@example.com", "password": "ChariGo123!"}
         ).data
@@ -691,3 +691,27 @@ def test_static_files_are_cacheable_and_pages_are_compressed(client):
     assert b"opt/children.webp" in __import__("gzip").decompress(home.data)
     asset = client.get("/static/css/style.css")
     assert "max-age=31536000" in asset.headers["Cache-Control"]
+
+
+def test_login_messages_and_demo_account_repair(client, app):
+    assert b"Home" in post(
+        client,
+        "/login",
+        {"email": " Goer@Example.com ", "password": "ChariGo123! "},
+        follow_redirects=True,
+    ).data
+    client.get("/")
+    post(client, "/logout")
+    wrong = post(client, "/login", {"email": "nobody@nowhere.com", "password": "x"})
+    assert b"No account uses that email address" in wrong.data
+    with app.app_context():
+        goer = db.session.scalar(db.select(User).where(User.email == "goer@example.com"))
+        goer.account_status = "inactive"
+        goer.password_hash = "changed"
+        db.session.commit()
+    broken = post(client, "/login", {"email": "goer@example.com", "password": "ChariGo123!"})
+    assert b"restore-demo" in broken.data
+    result = app.test_cli_runner().invoke(args=["restore-demo"])
+    assert "Demo accounts are ready" in result.output
+    assert login(client).status_code == 200
+    assert client.get("/profile").status_code == 200

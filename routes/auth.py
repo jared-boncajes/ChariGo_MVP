@@ -30,22 +30,45 @@ def login():
     if g.user:
         return redirect(url_for(home_for(g.user)))
     if request.method == "POST":
-        user = db.session.scalar(
-            db.select(User).where(
-                User.email == request.form.get("email", "").strip().lower()
+        address = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
+        user = db.session.scalar(db.select(User).where(User.email == address))
+        # A pasted password often carries a stray space; accept it without one.
+        correct = user and (
+            check_password_hash(user.password_hash, password)
+            or (
+                password != password.strip()
+                and check_password_hash(user.password_hash, password.strip())
             )
         )
-        if (
-            user
-            and check_password_hash(
-                user.password_hash, request.form.get("password", "")
-            )
-            and user.account_status == "active"
-        ):
+        if correct and user.account_status == "active":
             session.clear()
             session["user_id"] = user.id
             return redirect(url_for(home_for(user)))
-        flash("Incorrect email or password, or this account is inactive.", "error")
+        from seed import DEMO_EMAILS, DEMO_PASSWORD
+
+        demo = address in DEMO_EMAILS
+        repair = " Stop the app, run “flask --app app restore-demo”, then start it again."
+        if correct:
+            flash(
+                "This account has been deactivated."
+                + (repair if demo else " Ask an administrator to reactivate it."),
+                "error",
+            )
+        elif demo and (not user or password.strip() == DEMO_PASSWORD):
+            # An older database, or a demo account whose password was changed.
+            flash(
+                "This demo account is missing or was changed in this database."
+                + repair,
+                "error",
+            )
+        elif not user:
+            flash(
+                "No account uses that email address. Check the spelling or sign up.",
+                "error",
+            )
+        else:
+            flash("That password is not correct. Passwords are case-sensitive.", "error")
     return render_template("auth.html", mode="login", title="Log in")
 
 

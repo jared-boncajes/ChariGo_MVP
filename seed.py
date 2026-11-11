@@ -13,6 +13,37 @@ from models import (
 )
 
 DEMO_PASSWORD = "ChariGo123!"
+DEMO_EMAILS = {
+    "goer@example.com",
+    "organization@example.com",
+    "admin@example.com",
+    "iwas@example.com",
+    "pending@example.com",
+    "juan@example.com",
+    "ana@example.com",
+}
+
+
+def restore_demo_accounts():
+    """Make the demo logins work again without touching any other data.
+
+    Returns "restored" when existing demo accounts were repaired, "seeded" when
+    an empty database received the full demo data, and "missing" when the
+    database holds other accounts but none of the demo ones.
+    """
+    if not db.session.scalar(db.select(User.id).limit(1)):
+        seed_database()
+        return "seeded"
+    accounts = db.session.scalars(
+        db.select(User).where(User.email.in_(DEMO_EMAILS))
+    ).all()
+    if not accounts:
+        return "missing"
+    for account in accounts:
+        account.password_hash = generate_password_hash(DEMO_PASSWORD)
+        account.account_status = "active"
+    db.session.commit()
+    return "restored"
 
 
 def seed_database():

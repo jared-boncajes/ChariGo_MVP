@@ -59,6 +59,19 @@ All demo accounts use the password **ChariGo123!** The log-in page has one-tap b
 | Organization | pending@example.com | Waiting for administrator approval |
 | Charity Goer | juan@example.com, ana@example.com | Volunteer applicants |
 
+### If logging in fails
+
+The log-in page says what is wrong: unknown email, wrong password, deactivated account, or a demo account that is missing or was changed.
+
+- **A demo account stopped working** (for example you deactivated it as the administrator, or the `instance/` folder holds a database from an older copy of the project): stop the app and run the command below. It resets the demo passwords and reactivates the demo accounts; everything else is kept.
+
+```bash
+flask --app app restore-demo
+```
+
+- **Start completely fresh:** `flask --app app reset-db` erases all data and reloads the demo (it asks first). Deleting the `instance/` folder and starting the app does the same.
+- Passwords are case-sensitive: `ChariGo123!` has a capital C and G and ends with an exclamation mark.
+
 ## Using the app
 
 **Charity Goer**
@@ -143,7 +156,7 @@ python -m pip install -r requirements-dev.txt
 python -m pytest -q
 ```
 
-21 tests cover sign-up and log-in, role and ownership restrictions, CSRF, the donation and volunteer flows, history filters / CSV export / withdrawal, organization and administrator workflows, uploads, caching and compression. Each test uses its own temporary database.
+22 tests cover sign-up and log-in, role and ownership restrictions, CSRF, the donation and volunteer flows, history filters / CSV export / withdrawal, organization and administrator workflows, uploads, caching and compression. Each test uses its own temporary database.
 
 ## Project structure
 
