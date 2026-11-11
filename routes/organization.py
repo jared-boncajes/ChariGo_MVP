@@ -26,6 +26,7 @@ from common import (
 )
 from models import (
     db,
+    Donation,
     Fundraiser,
     Organization,
     VolunteerApplication,
@@ -43,6 +44,36 @@ def dashboard():
         "organization_dashboard.html",
         title="Organization Profile",
         org=org,
+        active="profile",
+    )
+
+
+@bp.route("/donations")
+@require_role("charity_organization")
+def donations():
+    """Every donation the organization has received, newest first."""
+    org = g.user.organization
+    campaigns = sorted(org.fundraisers, key=lambda f: f.title)
+    fid = request.args.get("fundraiser", type=int)
+    if fid not in {f.id for f in campaigns}:
+        fid = None
+    query = (
+        db.select(Donation)
+        .join(Fundraiser)
+        .where(Fundraiser.organization_id == org.id)
+        .order_by(Donation.created_at.desc(), Donation.id.desc())
+    )
+    if fid:
+        query = query.where(Donation.fundraiser_id == fid)
+    items = db.session.scalars(query).all()
+    return render_template(
+        "organization_donations.html",
+        title="Donations Received",
+        items=items,
+        campaigns=campaigns,
+        fundraiser_id=fid,
+        total=sum(d.amount_cents for d in items),
+        donors=len({d.user_id for d in items}),
         active="profile",
     )
 

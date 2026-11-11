@@ -1,3 +1,5 @@
 Flask==3.1.2
 Flask-SQLAlchemy==3.1.1
 Pillow==12.0.0
+# Production server for online hosting (not needed, or available, on Windows).
+gunicorn==23.0.0; sys_platform != "win32"

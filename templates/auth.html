@@ -37,15 +37,23 @@
                 Already have an account? <a href="{{ url_for('auth.login') }}">Log In</a>
             {% endif %}
         </p>
-        <details class="demo-info">
-            <summary>Try a demo account</summary>
-            <p>
-                Use <strong>goer@example.com</strong>, <strong>organization@example.com</strong>, or <strong>admin@example.com</strong>.
-            </p>
-            <p>
-                Password: <strong>ChariGo123!</strong>
-            </p>
-            <small>Demo payments are simulated. Email login is available; social sign-in is outside this demo.</small>
-        </details>
+        {% if mode == 'login' %}
+            <details class="demo-info" open>
+                <summary>Try a demo account</summary>
+                <p>Pick a role to fill in the form, then press Log In.</p>
+                <div class="demo-fill">
+                    {% for label,address in [('Charity Goer','goer@example.com'),('Organization','organization@example.com'),('Administrator','admin@example.com')] %}
+                        <button type="button"
+                                class="button secondary small"
+                                data-fill-email="{{ address }}"
+                                data-fill-password="ChariGo123!">{{ label }}</button>
+                    {% endfor %}
+                </div>
+                <p>
+                    <strong>goer@example.com</strong>, <strong>organization@example.com</strong> or <strong>admin@example.com</strong> · password <strong>ChariGo123!</strong>
+                </p>
+                <small>Demo payments are simulated. Email login is available; social sign-in is outside this demo.</small>
+            </details>
+        {% endif %}
     </section>
 {% endblock %}

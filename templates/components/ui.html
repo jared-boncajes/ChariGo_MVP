@@ -41,7 +41,7 @@
     <div class="page-heading">
         {% if back %}
             <a class="back" href="{{ back }}" aria-label="Go back">
-                <img src="{{ url_for('static',filename='icons/back.svg') }}" alt="">
+                <span class="icon icon-back" aria-hidden="true"></span>
             </a>
         {% endif %}
         <h1>{{ title }}</h1>
@@ -49,6 +49,7 @@
 {% endmacro %}
 {% macro empty(title='Nothing here yet', description='Explore a cause and take your first step toward making a difference.', link='/causes', label='Explore causes') %}
     <section class="empty card">
+        <span class="empty-art" aria-hidden="true"></span>
         <h2>{{ title }}</h2>
         <p>{{ description }}</p>
         {% if link %}<a class="button secondary" href="{{ link }}">{{ label }}</a>{% endif %}
@@ -65,22 +66,33 @@
     </div>
 {% endmacro %}
 {% macro fundraiser_card(f, management=false) %}
-    <article class="fundraiser-card"><a class="campaign-main"
-   href="{{ url_for('organization.manage',fid=f.id) if management else url_for('goer.fundraiser',fid=f.id) }}">
-        <img class="campaign-thumb"
-             src="{{ image_url(f.cover_image) }}"
-             alt="{{ f.title }}">
-        <div class="campaign-copy">
-            <small>{{ f.category }}</small>
-            <h3>{{ f.title }}</h3>
-            <p>{{ f.organization.name }}</p>
-            <p class="clamp">{{ f.impact }}</p>
+    {% set link = url_for('organization.manage',fid=f.id) if management else url_for('goer.fundraiser',fid=f.id) %}
+    <article class="fundraiser-card">
+        <a class="campaign-main" href="{{ link }}">
+            <span class="campaign-media">
+                <img class="campaign-thumb"
+                     src="{{ image_url(f.cover_image) }}"
+                     alt=""
+                     loading="lazy"
+                     decoding="async">
+                <span class="chip">{{ f.category }}</span>
+            </span>
+            <span class="campaign-copy">
+                <h3>{{ f.title }}</h3>
+                <span class="campaign-org">{{ f.organization.name }} · {{ f.location }}</span>
+                <span class="clamp">{{ f.impact }}</span>
+                {% if f.opportunity and f.opportunity.available and not management %}
+                    <span class="chip chip-green">Volunteers needed</span>
+                {% endif %}
+            </span>
+        </a>
+        <div class="campaign-foot">
+            {{ progress(f) }}
+            <div class="card-foot">
+                {{ badge(f.display_status) }}<a href="{{ link }}">{{ 'Manage fundraiser' if management else 'View fundraiser' }} <span aria-hidden="true">→</span></a>
+            </div>
         </div>
-    </a>{{ progress(f) }}
-    <div class="card-foot">
-        {{ badge(f.display_status) }}<a href="{{ url_for('organization.manage',fid=f.id) if management else url_for('goer.fundraiser',fid=f.id) }}">{{ 'Manage fundraiser' if management else 'View fundraiser' }} <span aria-hidden="true">→</span></a>
-    </div>
-</article>
+    </article>
 {% endmacro %}
 {% macro upload(name, label, hint='JPG or PNG · maximum 3 MB', accept='.jpg,.jpeg,.png') %}
     <label class="field upload" for="{{ name }}">
@@ -88,4 +100,13 @@
         <input id="{{ name }}" name="{{ name }}" type="file" accept="{{ accept }}">
         <small>{{ hint }}</small><span class="file-feedback" aria-live="polite"></span>
     </label>
+{% endmacro %}
+{% macro stat(value, label, href='') %}
+    {% if href %}
+        <a class="stat" href="{{ href }}"><strong>{{ value }}</strong><span>{{ label }}</span></a>
+    {% else %}
+        <div class="stat">
+            <strong>{{ value }}</strong><span>{{ label }}</span>
+        </div>
+    {% endif %}
 {% endmacro %}

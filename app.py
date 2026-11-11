@@ -1,3 +1,4 @@
+import gzip
 import os
 import secrets
 import sqlite3
@@ -49,12 +50,35 @@ def create_app(test_config=None):
         UPLOAD_FOLDER=str(Path(app.instance_path) / "uploads"),
         PRIVATE_FOLDER=str(Path(app.instance_path) / "portfolios"),
         CSRF_ENABLED=True,
+        # Static files carry a version in their URL, so browsers may keep them.
+        SEND_FILE_MAX_AGE_DEFAULT=60 * 60 * 24 * 365,
     )
     if test_config:
         app.config.update(test_config)
     for key in ["UPLOAD_FOLDER", "PRIVATE_FOLDER"]:
         Path(app.config[key]).mkdir(parents=True, exist_ok=True)
     db.init_app(app)
+    if os.environ.get("TRUST_PROXY") == "1":
+        # Hosting platforms terminate HTTPS in front of the app.
+        from werkzeug.middleware.proxy_fix import ProxyFix
+
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
+
+    static_root = Path(app.static_folder)
+    optimized = {p.stem for p in (static_root / "images" / "opt").glob("*.webp")}
+    versions = {}
+
+    @app.url_defaults
+    def version_static_files(endpoint, values):
+        if endpoint != "static" or "filename" not in values:
+            return
+        name = values["filename"]
+        if name not in versions or app.debug:
+            try:
+                versions[name] = int((static_root / name).stat().st_mtime)
+            except OSError:
+                versions[name] = 0
+        values["v"] = versions[name]
 
     @app.before_request
     def load_user_and_protect_forms():
@@ -85,8 +109,22 @@ def create_app(test_config=None):
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
         )
+        if request.endpoint in {"static", "uploaded_image"}:
+            return response
         if g.get("user") or request.endpoint in {"auth.login", "auth.register"}:
             response.headers["Cache-Control"] = "no-store"
+        # Compress pages: a large saving on slow mobile connections.
+        if (
+            "gzip" in request.headers.get("Accept-Encoding", "")
+            and not response.direct_passthrough
+            and response.status_code == 200
+            and response.mimetype in {"text/html", "text/csv"}
+            and "Content-Encoding" not in response.headers
+            and len(response.get_data()) > 1024
+        ):
+            response.set_data(gzip.compress(response.get_data(), 5))
+            response.headers["Content-Encoding"] = "gzip"
+            response.headers["Vary"] = "Accept-Encoding"
         return response
 
     @app.context_processor
@@ -96,7 +134,12 @@ def create_app(test_config=None):
         def image_url(name):
             if name and name.startswith("upload:"):
                 return url_for("uploaded_image", name=name[7:])
-            return url_for("static", filename="images/" + (name or "logo.png"))
+            name = name or "logo.png"
+            stem = name.rsplit(".", 1)[0]
+            if stem in optimized:
+                # Same picture, re-encoded as WebP at a fraction of the size.
+                name = "opt/" + stem + ".webp"
+            return url_for("static", filename="images/" + name)
 
         return dict(
             current_user=g.user,
@@ -128,7 +171,9 @@ def create_app(test_config=None):
 
     @app.route("/uploads/<name>")
     def uploaded_image(name):
-        return send_from_directory(app.config["UPLOAD_FOLDER"], name)
+        return send_from_directory(
+            app.config["UPLOAD_FOLDER"], name, max_age=60 * 60 * 24 * 30
+        )
 
     @app.route("/health")
     def health():
@@ -190,13 +235,21 @@ def create_app(test_config=None):
         seed_database()
         click.echo("Demo database reset.")
 
+    if not app.config.get("TESTING") and os.environ.get("AUTO_SETUP", "1") == "1":
+        # First start needs no manual steps: create tables and, when the
+        # database is empty, load the demo data (SEED_DEMO=0 turns that off).
+        with app.app_context():
+            db.create_all()
+            if os.environ.get("SEED_DEMO", "1") == "1":
+                from seed import seed_database
+
+                seed_database()
+
     return app
 
 
 if __name__ == "__main__":
     app = create_app()
-    with app.app_context():
-        db.create_all()
     app.run(
         host=os.environ.get("HOST", "127.0.0.1"),
         port=int(os.environ.get("PORT", 5000)),

@@ -22,6 +22,20 @@
             <div class="stack">
                 <a class="action-row" href="{{ url_for('goer.donation_history') }}">Donation history <span>›</span></a><a class="action-row" href="{{ url_for('goer.volunteer_history') }}">Volunteer history <span>›</span></a>
             </div>
+            <h2>Recent Activity</h2>
+            <div class="stack">
+                {% for type,item in recent %}
+                    {% if type == 'donation' %}
+                        <a class="activity-row" href="{{ url_for('goer.receipt',did=item.id) }}">
+                            <span><strong>Donated {{ item.amount_cents|peso }}</strong><small>{{ item.fundraiser.title }} · {{ item.created_at|localdate }}</small></span><span aria-hidden="true">›</span></a>
+                    {% else %}
+                        <a class="activity-row" href="{{ url_for('goer.volunteer_history') }}">
+                            <span><strong>Volunteer application · {{ item.status|title }}</strong><small>{{ item.opportunity.title }} · {{ item.created_at|localdate }}</small></span><span aria-hidden="true">›</span></a>
+                    {% endif %}
+                {% else %}
+                    <p class="muted">Your donations and volunteer applications will appear here.</p>
+                {% endfor %}
+            </div>
             <h2>Saved Charities</h2>
             <div class="stack">
                 {% for saved in current_user.saved_charities %}

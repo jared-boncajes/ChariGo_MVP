@@ -9,6 +9,43 @@ document.querySelectorAll("[data-toggle-password]").forEach((button) => {
     button.setAttribute("aria-label", show ? "Hide password" : "Show password");
   });
 });
+// Visible system status: a progress bar while the next page is requested.
+function startLoading() {
+  document.documentElement.classList.add("is-loading");
+}
+document.addEventListener("click", (event) => {
+  const link = event.target.closest("a[href]");
+  if (
+    !link ||
+    event.defaultPrevented ||
+    event.button !== 0 ||
+    event.metaKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    link.target ||
+    link.hasAttribute("download") ||
+    link.origin !== location.origin ||
+    (link.pathname === location.pathname && link.hash)
+  )
+    return;
+  startLoading();
+});
+document.querySelectorAll(".flash-close").forEach((button) => {
+  button.addEventListener("click", () => button.closest(".flash").remove());
+});
+// Filters apply as soon as a choice changes; the Apply button remains for keyboards and no-JS.
+document.querySelectorAll("form[data-autosubmit]").forEach((form) => {
+  form.querySelectorAll("select, input[type=checkbox]").forEach((control) => {
+    control.addEventListener("change", () => form.requestSubmit());
+  });
+});
+document.querySelectorAll("[data-fill-email]").forEach((button) => {
+  button.addEventListener("click", () => {
+    document.getElementById("email").value = button.dataset.fillEmail;
+    document.getElementById("password").value = button.dataset.fillPassword;
+    document.getElementById("password").focus();
+  });
+});
 const confirmDialog = document.getElementById("confirm-dialog");
 let awaitingForm = null;
 let previouslyFocused = null;
@@ -43,6 +80,7 @@ document.querySelectorAll("form").forEach((form) => {
       );
     }
     if (!form.reportValidity()) {
+      form.classList.add("was-validated");
       event.preventDefault();
       return;
     }
@@ -52,6 +90,8 @@ document.querySelectorAll("form").forEach((form) => {
       previouslyFocused = document.activeElement;
       document.getElementById("dialog-message").textContent =
         form.dataset.confirm;
+      document.getElementById("dialog-confirm").textContent =
+        form.dataset.confirmLabel || "Confirm";
       confirmDialog.showModal();
       document.getElementById("dialog-cancel").focus();
       return;
@@ -72,6 +112,7 @@ document.querySelectorAll("form").forEach((form) => {
       }
       form.setAttribute("aria-busy", "true");
     }
+    startLoading();
   });
   form
     .querySelectorAll('[name="password"],[name="confirm_password"]')
@@ -83,6 +124,7 @@ document.querySelectorAll("form").forEach((form) => {
     });
 });
 window.addEventListener("pageshow", () => {
+  document.documentElement.classList.remove("is-loading");
   document.querySelectorAll("form[data-submitting]").forEach((form) => {
     delete form.dataset.submitting;
     form.removeAttribute("aria-busy");

@@ -1,140 +1,175 @@
 # ChariGo
 
-A runnable Flask MVP that connects Charity Goers, verified charity organizations and system administrators. Built from the supplied ChariGo Figma archive with its original photos, clover logo, vector icons, Inter typography and pink/green visual system. No frontend framework, CDN, payment provider or external service is required at runtime.
+ChariGo connects **Charity Goers**, verified **charity organizations** and **administrators**: browse causes, make (simulated) donations, apply to volunteer, and follow everything in a searchable history. It is a Flask + SQLite app with server-rendered pages and no frontend framework, so it runs anywhere Python does.
 
-## Run locally
+The interface follows the ChariGo Figma design (Inter, pink `#F77492` / `#FEB5C6`, green `#03541C`, the clover logo and the original photos and icons) and adapts to the screen: a bottom tab bar on phones, a top navigation bar and multi-column layouts on tablets and PCs.
 
-Requires Python 3.12 (tested), or a compatible Python 3.10+ installation with pip.
+## Quick start (local Flask)
+
+Requires Python 3.10 or newer.
 
 ```bash
 python -m venv .venv
 ```
 
-Activate the virtual environment:
+Activate it — macOS / Linux:
 
 ```bash
-# macOS / Linux
 source .venv/bin/activate
-# Windows PowerShell
-.venv\Scripts\Activate.ps1
-# Windows Command Prompt
-.venv\Scripts\activate.bat
 ```
 
-From the project directory:
+Windows PowerShell:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+Then install and run:
 
 ```bash
-python -m pip install -r requirements.lock
-flask --app app:create_app init-db
-flask --app app:create_app seed
+python -m pip install -r requirements.txt
+```
+
+```bash
 python app.py
 ```
 
-Open the local server shown in the terminal (default port 5000). The cloud onboarding UI does not provide a public web preview; the app has been validated with local HTTP requests and Chromium. `HOST` and `PORT` can change the listening address. Debug mode is off by default.
+Open <http://127.0.0.1:5000>. The first start creates the database in `instance/charigo.db` and loads the demo data automatically; later starts keep your data.
 
-The database is created in `instance/charigo.db`. The seed command is safe to repeat: it preserves existing data. To intentionally delete all local records and restore the demo, run `flask --app app:create_app reset-db` and answer its confirmation prompt. Back up `instance/` before resetting; it also contains uploaded files and the local session key.
+`flask --app app run --debug` also works if you prefer the Flask CLI with auto-reload.
 
-`requirements.lock` pins the exact installed runtime and test dependencies. `requirements.txt` contains the direct application dependencies; `requirements-dev.txt` adds pytest when refreshing dependencies intentionally. Browser checks additionally need Playwright and Chromium; they are not application dependencies.
+### Try it on your phone (same Wi-Fi)
+
+```bash
+HOST=0.0.0.0 python app.py
+```
+
+Then open `http://<your-computer's-IP>:5000` on the phone. On Windows PowerShell use `$env:HOST="0.0.0.0"; python app.py`.
 
 ## Demo accounts
 
-All demo accounts use **ChariGo123!**. Passwords are stored as Werkzeug scrypt hashes.
+All demo accounts use the password **ChariGo123!** The log-in page has one-tap buttons that fill these in.
 
-| Role | Email | Use |
+| Role | Email | What to try |
 |---|---|---|
-| Charity Goer | goer@example.com | Maria Santos; donation and volunteer histories, saved charity |
-| Organization | organization@example.com | Verified Angat Buhay Foundation; campaign and applicant management |
-| System Administrator | admin@example.com | User/organization/content moderation and system records |
-| Organization | iwas@example.com | A second verified organization, useful for demonstrating ownership restrictions |
-| Organization | pending@example.com | Pending registration for administrator approval/rejection |
-| Charity Goer | juan@example.com | Volunteer applicant with pending request |
-| Charity Goer | ana@example.com | A second pending applicant |
+| Charity Goer | goer@example.com | Donate, apply to volunteer, view history |
+| Organization | organization@example.com | Manage fundraisers, review applicants, see donations received |
+| Administrator | admin@example.com | Approve organizations, moderate content, audit log |
+| Organization | iwas@example.com | A second verified organization |
+| Organization | pending@example.com | Waiting for administrator approval |
+| Charity Goer | juan@example.com, ana@example.com | Volunteer applicants |
 
-These are local demonstration accounts. Do not expose a seeded demo database publicly with these passwords.
+## Using the app
 
-## Working workflows
+**Charity Goer**
 
-- **Charity Goer:** select role → register → log in → browse/search by category, organization, location or volunteer availability → open fundraiser → select a simulated one-time donation → review amount/method/total → confirm → persistent receipt and updated progress/history. Volunteer applications also have a review step, pending state, duplicate protection and live acceptance/rejection in history. Edit personal information, photo, skills and availability. Save/unsave charities.
-- **Organization:** register → complete official organization details and optional portfolio → pending verification → administrator approval → create fundraiser with optional volunteer opportunity → view current/past campaigns → edit campaign and volunteer details → review applicants and their profiles → confirm accept/reject. Completion or deactivation closes a campaign while preserving donations and applications.
-- **Administrator:** log in with seeded admin account → search/filter users, organizations or opportunities → review a record → confirm an action → see changed access/visibility and a new audit record. Supports user deactivation/reactivation; organization approval, rejection, deactivation and reactivation; independent fundraiser and volunteer opportunity moderation; searchable system records. An administrator cannot deactivate their own account. Public registration cannot create administrators.
+1. *Sign up* → choose **Charity Goer** → create an account (or use the demo account).
+2. **Home** shows your impact, categories and featured fundraisers. **Explore** searches and filters by category, organization and volunteer need — filters apply as soon as you change them.
+3. Open a fundraiser → **Donate** → pick an amount and a mock payment method → review → confirm. You get a receipt with a reference number. No money moves; payments are simulated.
+4. On a fundraiser with a volunteer opportunity → **Volunteer** → write a short message → review → submit.
+5. **Profile → Donation history / Volunteer history** (see below).
 
-Verified organization features are server-enforced. A pending, rejected or inactive organization can update its profile but cannot create/edit campaigns or review applicants. Rejected organizations resubmit by updating their profile. Inactive organizations need administrator reactivation. Existing user sessions are invalidated on their next request after account deactivation. Inactive organization accounts hide their campaigns from public listings.
+**History**
 
-## Data and security
+- *Donations*: totals, number of donations and charities supported; search by charity, fundraiser or reference number; filter by period; sort newest / oldest / highest; entries grouped by month; **View receipt** and **Donate again** on each entry.
+- *Volunteering*: every application with its live status (pending, accepted, rejected), a plain-language explanation of what the status means, the event date, and your message. Filter by status and period. A pending application can be **withdrawn** (with confirmation).
+- **Download CSV** exports exactly what is currently shown.
+- The profile page shows your three most recent activities; the home page links straight to history.
+- Organizations get **Profile → Donations Received**: every donation to their fundraisers, filterable by fundraiser, with anonymous donors kept anonymous.
 
-SQLite and Flask-SQLAlchemy provide eight small models: User, Organization, Fundraiser, Donation, VolunteerOpportunity, VolunteerApplication, SavedCharity and SystemRecord. Money is stored as integer centavos. Raised amounts and progress derive from the actual donation rows; no separate total can drift out of sync. Volunteer applications have a database uniqueness constraint, donation confirmations have unique submission tokens, and volunteer acceptance uses a serialized SQLite transaction to enforce available slots.
+**Organization**: sign up as an organization → complete the organization profile → wait for administrator approval → create fundraisers (optionally with a volunteer opportunity) → review applicants and accept or decline → mark campaigns completed or deactivate them. History is always preserved.
 
-All writes use POST and CSRF tokens, passwords are hashed, and server-side role and ownership checks protect every private route. Sessions use HttpOnly and SameSite=Lax cookies. The browser receives a restrictive Content Security Policy, frame protection and MIME sniffing protection. Authenticated responses are not cached. Users see recoverable messages for validation, permission, missing records, file size and database errors.
+**Administrator**: review and approve/reject organizations, deactivate or reactivate users and listings, and search the system records (audit log). Administrators cannot be created through public sign-up.
 
-Images accept only real decoded PNG/JPEG files up to 3 MB and 25 megapixels, are resized/re-encoded to JPEG with random filenames, and live under `instance/uploads/`. Portfolio uploads accept PDF files up to 10 MB (signature and extension checked), live outside public static files and are served as downloads only to their owning organization and administrators. A full multipart request is limited to 14 MB. Portfolio text is also supported. PDFs are not malware-scanned; handle untrusted documents appropriately before production use.
+## Deploy online
 
-For local development a random session signing key is generated once in the ignored `instance/session.key` with restricted file permissions. Set a securely generated **SECRET_KEY** environment variable for deployments. Optional **DATABASE_URL** overrides the default SQLite connection. Set **COOKIE_SECURE=1** behind HTTPS. Never commit secrets or upload files to Git. Displayed audit times use Asia/Manila; stored timestamps use UTC.
+The repository is ready for a Python host. `wsgi.py` exposes the app, `Procfile` and `render.yaml` hold the start command (`gunicorn wsgi:app`), and the app creates and seeds its own database on first start.
 
-## Structure
+**Render (free tier)**
 
-```text
-app.py                 App factory, configuration, CSRF, security headers, CLI
-models.py              SQLAlchemy models and shared derived state
-common.py              Authorization, validation, uploads, audit helpers
-seed.py                Repeatable demonstration data
-routes/
-  auth.py              Registration, login and logout
-  goer.py              Browse, donations, volunteering, histories, profiles
-  organization.py      Organization, campaign and applicant management
-  admin.py             Review, moderation, account management and audit log
-templates/             Jinja pages and reusable component macros
-static/
-  css/style.css        Figma tokens, responsive styles and component states
-  js/main.js           Native form validation, dialogs and processing feedback
-  images/              Original extracted Figma assets
-  icons/               Original Figma vector exports
-  fonts/               Locally served Inter, with its font license
-tests/                 Isolated database workflow and authorization tests
-docs/                  Figma audit, frame inventory, assets and specification
-instance/              Ignored local database, uploads and session key
+1. Push this repository to GitHub.
+2. In Render: **New + → Blueprint**, connect the repository, and apply. `render.yaml` sets the build and start commands, generates `SECRET_KEY`, and turns on secure cookies.
+3. Open the `https://<name>.onrender.com` URL Render gives you.
+
+**Any other host** (Railway, Fly.io, PythonAnywhere, a VPS): install `requirements.txt`, run the `Procfile` command, and set the variables below. On PythonAnywhere, point the WSGI file at `wsgi.py`'s `app`.
+
+| Variable | Purpose | Default |
+|---|---|---|
+| `SECRET_KEY` | Signs sessions. **Set a long random value online.** | random key saved in `instance/` |
+| `COOKIE_SECURE` | `1` when served over HTTPS | off |
+| `TRUST_PROXY` | `1` behind a hosting platform's HTTPS proxy | off |
+| `DATABASE_URL` | SQLAlchemy URL | `sqlite:///charigo.db` in `instance/` |
+| `SEED_DEMO` | `0` to start with an empty database (no demo accounts) | `1` |
+| `AUTO_SETUP` | `0` to skip automatic table creation | `1` |
+| `HOST`, `PORT` | Address for `python app.py` | `127.0.0.1`, `5000` |
+
+Things to know before sharing a public link:
+
+- The demo accounts have a published password. Fine for a class demo; for anything else set `SEED_DEMO=0` and register real accounts.
+- Free hosts usually have a temporary disk: the SQLite database and uploaded images reset on each redeploy or restart. Attach a persistent disk (and point `DATABASE_URL` at it) to keep data.
+- Use one worker process with SQLite, as the provided start command does.
+
+## HCI design principles applied
+
+| Principle | Where it shows |
+|---|---|
+| Visibility of system status | Loading bar on every navigation, buttons switch to "Saving…" while a form submits, status badges on every fundraiser and application, live result counts on filtered lists, progress bars from real donation totals |
+| Match with the real world | Peso amounts, Philippine time, plain status notes ("The organization is reviewing your application") instead of codes |
+| User control and freedom | Back button on every inner page, review step before donating or applying, Edit / Cancel on reviews, withdraw a pending application, Clear filters, dismissible messages |
+| Consistency and standards | One set of tokens and components (buttons, cards, badges, tabs, stat tiles) across all three roles; navigation always in the same place for the device |
+| Error prevention | Confirmation dialogs for withdraw, log out and every destructive admin/organization action; amount presets; duplicate-submission protection; file size checked before upload |
+| Recognition rather than recall | Icons with text labels, category tiles, demo-account buttons, receipts and references listed in history, "Donate again" |
+| Flexibility and efficiency | Filters auto-apply, search from the home page, CSV export, impact tiles link to history |
+| Aesthetic and minimalist design | Figma palette with generous spacing, one primary action per screen, secondary detail tucked behind disclosure |
+| Help users recover from errors | Field-level validation messages, friendly error pages with a way back, empty states that say what to do next |
+| Accessibility | Keyboard focus rings, skip link, labelled forms, large touch targets, dark text on the pink surfaces for contrast, reduced-motion support |
+
+Responsive behaviour: mobile-first CSS with breakpoints at 640px (two-column grids) and 900px (top navigation, three-column grids, sticky donate panel). Checked from 320px to 1440px wide with no horizontal scrolling.
+
+## What makes it run smoothly
+
+- Photos are served as WebP copies (about 300 KB in total instead of 3 MB); originals stay in `static/images/`.
+- Static files are versioned and cached for a year; pages are gzip-compressed.
+- Cross-page transitions use the browser's View Transitions where supported, and respect "reduce motion".
+- No external requests: fonts, icons and scripts are all served locally.
+
+## Tests
+
+```bash
+python -m pip install -r requirements-dev.txt
 ```
-
-## Design audit and scope
-
-See [docs/FIGMA_AUDIT.md](docs/FIGMA_AUDIT.md) for all 25 application-frame mappings, component states, schema, missing UI and design decisions. [docs/figma-inventory.json](docs/figma-inventory.json) records every top-level frame/component with its original Figma ID and text. The administrator screens extend the same cards, buttons, forms and colors; no unrelated dashboard template or sidebar is introduced. Mobile bottom navigation remains present; wider layouts use centered content and grids.
-
-[docs/ASSETS.md](docs/ASSETS.md) lists the original image hashes and exported vector sources. Images remain the exact supplied bytes. Inter is served locally under its included OFL license. Use of the supplied charity names, photos and branding is for this prototype; no organizational endorsement is claimed.
-
-MVP limits:
-
-- Payments are **simulated**, one-time and stored locally. No funds are transferred and no real card details are requested. Monthly/recurring payments and live gateways are not exposed.
-- Email/password login is implemented. Phone-number login, Google/Facebook OAuth, automated email notifications and email password recovery need external providers and are not exposed as inactive buttons. In-app status and histories supply updates.
-- Organization portfolios support text and PDF; DOC/DOCX uploads are intentionally excluded. No sensitive identity document is requested.
-- One editable volunteer opportunity per fundraiser keeps organization management straightforward. Accepted applications for past events represent participation history; there is no separate attendance/certification workflow.
-- Campaign and admin removals use preserved records and soft status changes. Organizations cannot reactivate moderator-disabled content. Administrator reactivation does not override an owner's completed/deactivated campaign or an inactive organization.
-- SQLite, a development server and demo accounts are intended for a student presentation/local MVP. Production operation would require a production server, TLS, migrations, backups, rate limiting, secure account recovery, stronger document scanning and deployment-specific hardening.
-
-## Validation
 
 ```bash
 python -m pytest -q
 ```
 
-Tests create an isolated temporary SQLite database for each case. They do not mutate your demo database. Coverage includes authentication, registration, inactive accounts, role/ownership restrictions, CSRF, donation validation/review/idempotency/receipts, volunteer applications and capacity, organization approval, campaign edits/deactivation, moderation visibility, audit records, image validation, private portfolios, saved charities and empty states.
+21 tests cover sign-up and log-in, role and ownership restrictions, CSRF, the donation and volunteer flows, history filters / CSV export / withdrawal, organization and administrator workflows, uploads, caching and compression. Each test uses its own temporary database.
 
-Browser validation uses the running Flask server, native form submissions, logout confirmation, original asset loading and responsive checks at 320, 375, 390, 430, 768, 1024, 1366 and 1920 pixels. The final evidence and limitations are recorded in [docs/VALIDATION.md](docs/VALIDATION.md).
+## Project structure
 
-For the managed Linux environment, `bash scripts/setup.sh` performs the same repeatable installation and seeding steps. Each cloud task is already isolated; use this checkout directly rather than creating a Git worktree.
-
-To repeat browser checks, install Playwright separately and use a disposable seeded database. For example, in one terminal on macOS/Linux:
-
-```bash
-export DATABASE_URL="sqlite:////tmp/charigo-browser-check.db"
-flask --app app:create_app init-db
-flask --app app:create_app seed
-PORT=5010 python app.py
+```text
+app.py                 App factory, configuration, security headers, caching, CLI
+wsgi.py                Entry point for production servers (gunicorn wsgi:app)
+models.py              SQLAlchemy models
+common.py              Authorization, validation, uploads, audit helpers
+seed.py                Demo data
+routes/                auth, goer (browse / donate / history), organization, admin
+templates/             Jinja pages and shared components
+static/css/style.css   Design tokens, components, responsive layout
+static/js/main.js      Progressive enhancement (works without JavaScript)
+static/images|icons|fonts  Original Figma assets, WebP copies in images/opt
+tests/                 Workflow and security tests
+docs/                  Figma audit, frame inventory, specification
+Procfile, render.yaml  Deployment configuration
 ```
 
-In another terminal:
+Useful commands: `flask --app app:create_app seed` (load demo data into an empty database) and `flask --app app:create_app reset-db` (erase everything and restore the demo; asks first).
 
-```bash
-# Playwright and a Chromium browser must be available in this Python environment.
-CHARIGO_BASE_URL=http://127.0.0.1:5010 CHROMIUM_BINARY=/usr/bin/chromium python tests/browser_check.py
-```
+## Scope and limits
 
-The optional browser script exercises 25 pages at eight widths, login for all roles, amount selection, donation confirmation/receipt and logout cancel/confirm. It writes screenshots and JSON results under ignored `artifacts/`, and creates a simulated donation in the database served at the supplied URL. Use a separate database rather than your presentation data. The script assumes the documented demo accounts and seed records are present.
+- Payments are simulated: no card details are requested and no money moves.
+- Email/password log-in only; no social sign-in, email notifications or password recovery.
+- SQLite and demo data suit a class project or demo. A production launch would need a managed database, migrations, backups, rate limiting and account recovery.
+- Security already in place: hashed passwords, CSRF tokens on every form, server-side role and ownership checks, a strict Content Security Policy, validated and re-encoded image uploads, private portfolio PDFs.
+
+See [docs/FIGMA_AUDIT.md](docs/FIGMA_AUDIT.md) for how each Figma frame maps to a page.

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}{% from 'components/ui.html' import heading,empty,stat with context %}
+{% block content %}
+    <div class="narrow-wide history-page">
+        {{ heading(title,url_for('organization.dashboard') ) }}
+        <div class="stats-grid">
+            {{ stat(total|peso, 'Total received') }}
+            {{ stat(items|length, 'Donations') }}
+            {{ stat(donors, 'Donors') }}
+        </div>
+        <form class="history-filters" method="get" data-autosubmit>
+            <label class="field search-field">
+                <span>Fundraiser</span>
+                <select name="fundraiser">
+                    <option value="">All fundraisers</option>
+                    {% for f in campaigns %}
+                        <option value="{{ f.id }}" {% if fundraiser_id == f.id %}selected{% endif %}>{{ f.title }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <button class="button">Apply</button>
+        </form>
+        <div class="stack">
+            {% for d in items %}
+                <article class="card history-card">
+                    <div class="history-main">
+                        <div class="row-between">
+                            <h3>{{ 'Anonymous donor' if d.anonymous else d.user.name }}</h3>
+                            <strong class="green amount">{{ d.amount_cents|peso }}</strong>
+                        </div>
+                        <p>{{ d.fundraiser.title }}</p>
+                        <small>{{ d.created_at|localtime }} · {{ d.payment_method }} (simulated) · Ref. {{ d.reference }}</small>
+                    </div>
+                </article>
+            {% else %}
+                {{ empty('No donations yet','Donations to your fundraisers will be listed here.',url_for('organization.fundraisers'),'View fundraisers') }}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,37 +1,72 @@
-{% extends 'base.html' %}{% from 'components/ui.html' import fundraiser_card,empty with context %}
+{% extends 'base.html' %}{% from 'components/ui.html' import fundraiser_card,empty,stat with context %}
 {% block content %}
-    <h1 class="sr-only">ChariGo Home</h1>
-    <form class="search-form" action="{{ url_for('goer.causes') }}">
-        <label class="sr-only" for="home-search">Search causes</label>
-        <input id="home-search"
-               name="q"
-               type="search"
-               placeholder="Search causes, charities, or a location">
-        <button class="button" aria-label="Search causes">Search</button>
-    </form>
+    <section class="hero">
+        <div class="hero-copy">
+            <p class="eyebrow">
+                {{ 'Welcome back, ' + current_user.name.split()[0] if current_user else 'Small acts. A bigger change.' }}
+            </p>
+            <h1>Find a cause close to your heart</h1>
+            <p class="muted">Donate or volunteer with verified Filipino charities.</p>
+            <form class="search-form" action="{{ url_for('goer.causes') }}" role="search">
+                <label class="sr-only" for="home-search">Search causes</label>
+                <span class="icon icon-search" aria-hidden="true"></span>
+                <input id="home-search"
+                       name="q"
+                       type="search"
+                       placeholder="Search causes, charities, or a location">
+                <button class="button" aria-label="Search causes">Search</button>
+            </form>
+        </div>
+        {% if current_user and current_user.role == 'charity_goer' %}
+            <aside class="hero-impact" aria-label="My impact">
+                <h2>My impact</h2>
+                <div class="stats-grid">
+                    {{ stat(current_user.donations|sum(attribute='amount_cents')|peso, 'Donated', url_for('goer.donation_history')) }}
+                    {{ stat(current_user.applications|length, 'Applications', url_for('goer.volunteer_history')) }}
+                </div>
+                <a class="text-link" href="{{ url_for('goer.donation_history') }}">View my history →</a>
+            </aside>
+        {% endif %}
+    </section>
+    <section aria-labelledby="browse-heading">
+        <div class="section-heading">
+            <h2 id="browse-heading">Browse by category</h2>
+        </div>
+        <div class="categories">
+            {% for label,icon in categories.items() %}
+                <a class="category" href="{{ url_for('goer.causes',category=label) }}">
+                    <img src="{{ url_for('static',filename='icons/'+icon+'.svg') }}"
+                         alt=""
+                         width="56"
+                         height="56">
+                    <span>{{ label }}</span></a>
+            {% endfor %}
+        </div>
+    </section>
+    {% if organizations %}
+        <section>
+            <div class="section-heading">
+                <h2>Featured Foundation</h2>
+                <a href="{{ url_for('goer.causes') }}">Explore charities →</a>
+            </div>
+            {% set org = organizations[0] %}
+            <a class="foundation-banner"
+               href="{{ url_for('goer.organization',oid=org.id) }}">
+                <img src="{{ image_url(org.banner) }}" alt="{{ org.name }} community">
+                <span><small>COMMUNITIES CREATING CHANGE</small><strong>{{ org.name }}</strong><span>Empowering Filipino communities <b aria-hidden="true">→</b></span></span></a>
+        </section>
+    {% endif %}
     <section>
         <div class="section-heading">
-            <h2>Featured Foundation</h2>
-            <a href="{{ url_for('goer.causes') }}">Explore charities →</a>
+            <h2>Featured Fundraisers</h2>
+            <a href="{{ url_for('goer.causes') }}">View all →</a>
         </div>
-        {% if organizations %}
-            {% set org = organizations[0] %}<a class="foundation-banner"
-   href="{{ url_for('goer.organization',oid=org.id) }}">
-            <img src="{{ image_url(org.banner) }}" alt="{{ org.name }} community">
-            <span><small>COMMUNITIES CREATING CHANGE</small><strong>{{ org.name }}</strong><span>Empowering Filipino communities <b aria-hidden="true">→</b></span></span></a>
-    {% endif %}
-</section>
-<section>
-    <div class="section-heading">
-        <h2>Featured Fundraisers</h2>
-        <a href="{{ url_for('goer.causes') }}">View all →</a>
-    </div>
-    <div class="campaign-grid">
-        {% for f in campaigns[:6] %}
-            {{ fundraiser_card(f) }}
-        {% else %}
-            {{ empty('No active fundraisers', 'Please check back soon for new community campaigns.') }}
-        {% endfor %}
-    </div>
-</section>
+        <div class="campaign-grid">
+            {% for f in campaigns[:6] %}
+                {{ fundraiser_card(f) }}
+            {% else %}
+                {{ empty('No active fundraisers', 'Please check back soon for new community campaigns.') }}
+            {% endfor %}
+        </div>
+    </section>
 {% endblock %}

@@ -1,6 +1,12 @@
+import csv
+import io
 import secrets
+from datetime import date, datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
+
 from flask import (
     Blueprint,
+    Response,
     abort,
     flash,
     g,
@@ -380,46 +386,245 @@ def application_success(aid):
     )
 
 
+PERIODS = {"30": "Last 30 days", "90": "Last 90 days", "365": "Last 12 months"}
+MANILA = ZoneInfo("Asia/Manila")
+
+
+def local(moment):
+    """Stored timestamps are UTC; people read them in Philippine time."""
+    return moment.replace(tzinfo=timezone.utc).astimezone(MANILA)
+
+
+def history_filters():
+    q = request.args.get("q", "").strip()[:100]
+    period = request.args.get("period", "")
+    if period not in PERIODS:
+        period = ""
+    since = (
+        datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=int(period))
+        if period
+        else None
+    )
+    return q, period, since
+
+
+def by_month(items):
+    groups = []
+    for item in items:
+        label = local(item.created_at).strftime("%B %Y")
+        if not groups or groups[-1][0] != label:
+            groups.append((label, []))
+        groups[-1][1].append(item)
+    return groups
+
+
+def csv_download(filename, header, rows):
+    def safe(value):
+        # Spreadsheet programs run cells that begin with these as formulas.
+        value = str(value)
+        return "'" + value if value[:1] in "=+-@" else value
+
+    buffer = io.StringIO()
+    writer = csv.writer(buffer)
+    writer.writerow(header)
+    writer.writerows([safe(cell) for cell in row] for row in rows)
+    return Response(
+        "﻿" + buffer.getvalue(),
+        mimetype="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+def filtered_donations():
+    q, period, since = history_filters()
+    sort = request.args.get("sort", "newest")
+    if sort not in {"newest", "oldest", "highest"}:
+        sort = "newest"
+    everything = db.session.scalars(
+        db.select(Donation)
+        .where(Donation.user_id == g.user.id)
+        .order_by(Donation.created_at.desc(), Donation.id.desc())
+    ).all()
+    items = [
+        d
+        for d in everything
+        if (not since or d.created_at.replace(tzinfo=None) >= since)
+        and (
+            not q
+            or q.casefold()
+            in " ".join(
+                [
+                    d.fundraiser.title,
+                    d.fundraiser.organization.name,
+                    d.reference,
+                    d.payment_method,
+                ]
+            ).casefold()
+        )
+    ]
+    if sort == "oldest":
+        items.reverse()
+    elif sort == "highest":
+        items.sort(key=lambda d: d.amount_cents, reverse=True)
+    return everything, items, dict(q=q, period=period, sort=sort)
+
+
+def filtered_applications():
+    q, period, since = history_filters()
+    status = request.args.get("status", "")
+    if status not in {"pending", "accepted", "rejected"}:
+        status = ""
+    everything = db.session.scalars(
+        db.select(VolunteerApplication)
+        .where(VolunteerApplication.user_id == g.user.id)
+        .order_by(VolunteerApplication.created_at.desc(), VolunteerApplication.id.desc())
+    ).all()
+    items = [
+        a
+        for a in everything
+        if (not status or a.status == status)
+        and (not since or a.created_at.replace(tzinfo=None) >= since)
+        and (
+            not q
+            or q.casefold()
+            in " ".join(
+                [
+                    a.opportunity.title,
+                    a.opportunity.fundraiser.organization.name,
+                    a.opportunity.location,
+                ]
+            ).casefold()
+        )
+    ]
+    return everything, items, dict(q=q, period=period, status=status)
+
+
+@bp.route("/history")
+@require_role("charity_goer")
+def history():
+    return redirect(url_for("goer.donation_history"))
+
+
 @bp.route("/history/donations")
 @require_role("charity_goer")
 def donation_history():
-    donations = db.session.scalars(
-        db.select(Donation)
-        .where(Donation.user_id == g.user.id)
-        .order_by(Donation.created_at.desc())
-    ).all()
+    everything, items, filters = filtered_donations()
     return render_template(
         "history.html",
         title="Donation History",
         kind="donation",
-        items=donations,
-        total=sum(d.amount_cents for d in donations),
+        items=items,
+        groups=by_month(items) if filters["sort"] != "highest" else [("", items)],
+        everything=everything,
+        filters=filters,
+        filtered=bool(filters["q"] or filters["period"]),
+        periods=PERIODS,
+        total=sum(d.amount_cents for d in everything),
+        shown_total=sum(d.amount_cents for d in items),
+        charities=len({d.fundraiser.organization_id for d in everything}),
         active="profile",
+    )
+
+
+@bp.route("/history/donations.csv")
+@require_role("charity_goer")
+def donation_history_csv():
+    _, items, _ = filtered_donations()
+    return csv_download(
+        "charigo-donations.csv",
+        ["Date", "Reference", "Organization", "Fundraiser", "Amount (PHP)", "Method", "Anonymous"],
+        [
+            [
+                local(d.created_at).strftime("%Y-%m-%d %H:%M"),
+                d.reference,
+                d.fundraiser.organization.name,
+                d.fundraiser.title,
+                f"{d.amount_cents / 100:.2f}",
+                d.payment_method + " (simulated)",
+                "Yes" if d.anonymous else "No",
+            ]
+            for d in items
+        ],
     )
 
 
 @bp.route("/history/volunteering")
 @require_role("charity_goer")
 def volunteer_history():
-    applications = db.session.scalars(
-        db.select(VolunteerApplication)
-        .where(VolunteerApplication.user_id == g.user.id)
-        .order_by(VolunteerApplication.created_at.desc())
-    ).all()
+    everything, items, filters = filtered_applications()
     return render_template(
         "history.html",
         title="Volunteer History",
         kind="volunteer",
-        items=applications,
-        total=sum(a.status == "accepted" for a in applications),
+        items=items,
+        groups=by_month(items),
+        everything=everything,
+        filters=filters,
+        filtered=bool(filters["q"] or filters["period"] or filters["status"]),
+        periods=PERIODS,
+        total=sum(a.status == "accepted" for a in everything),
+        pending=sum(a.status == "pending" for a in everything),
+        today=date.today(),
         active="profile",
     )
+
+
+@bp.route("/history/volunteering.csv")
+@require_role("charity_goer")
+def volunteer_history_csv():
+    _, items, _ = filtered_applications()
+    return csv_download(
+        "charigo-volunteering.csv",
+        ["Applied", "Opportunity", "Organization", "Event date", "Location", "Status"],
+        [
+            [
+                local(a.created_at).strftime("%Y-%m-%d %H:%M"),
+                a.opportunity.title,
+                a.opportunity.fundraiser.organization.name,
+                a.opportunity.event_date.isoformat(),
+                a.opportunity.location,
+                a.status.title(),
+            ]
+            for a in items
+        ],
+    )
+
+
+@bp.post("/applications/<int:aid>/withdraw")
+@require_role("charity_goer")
+def withdraw_application(aid):
+    application = db.get_or_404(VolunteerApplication, aid)
+    if application.user_id != g.user.id:
+        abort(403)
+    if application.status != "pending":
+        abort(409, "Only a pending application can be withdrawn.")
+    title = application.opportunity.title
+    record(
+        "Application withdrawn",
+        "application",
+        application.id,
+        "A volunteer withdrew a pending application.",
+    )
+    db.session.delete(application)
+    commit()
+    flash(f"Your application for {title} was withdrawn.", "success")
+    return redirect(url_for("goer.volunteer_history"))
 
 
 @bp.route("/profile")
 @require_role()
 def profile():
-    return render_template("profile.html", title="My Profile", active="profile")
+    recent = []
+    if g.user.role == "charity_goer":
+        recent = sorted(
+            [("donation", d) for d in g.user.donations]
+            + [("volunteer", a) for a in g.user.applications],
+            key=lambda pair: pair[1].created_at,
+            reverse=True,
+        )[:3]
+    return render_template(
+        "profile.html", title="My Profile", active="profile", recent=recent
+    )
 
 
 @bp.route("/profile/edit", methods=["GET", "POST"])

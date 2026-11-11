@@ -618,3 +618,76 @@ def test_save_charity_and_confirmations(client, app):
     assert post(client, "/admin/actions/user/1/deactivate", {}).status_code == 400
     with app.app_context():
         assert db.session.get(User, 1).account_status == "active"
+
+
+def flat(response):
+    """Page text with template whitespace collapsed."""
+    return " ".join(response.get_data(as_text=True).split())
+
+
+def test_history_filters_export_and_withdrawal(client, app):
+    login(client)
+    page = client.get("/history/donations")
+    assert page.status_code == 200
+    assert "Showing 3 of 3 donations" in flat(page)
+    assert b"Download CSV" in page.data
+    assert client.get("/history").status_code == 302
+
+    narrowed = client.get("/history/donations?q=iwas+gutom")
+    assert "Showing 1 of 3 donations" in flat(narrowed)
+    assert b"Clear filters" in narrowed.data
+    nothing = client.get("/history/donations?q=no-such-charity")
+    assert b"Nothing matches these filters" in nothing.data
+    assert client.get("/history/donations?period=30&sort=highest").status_code == 200
+    # Unknown filter values fall back to the defaults instead of failing.
+    assert client.get("/history/donations?period=x&sort=y").status_code == 200
+
+    export = client.get("/history/donations.csv?q=iwas+gutom")
+    assert export.mimetype == "text/csv"
+    assert "attachment" in export.headers["Content-Disposition"]
+    rows = export.get_data(as_text=True).strip().splitlines()
+    assert len(rows) == 2 and "Iwas Gutom Society" in rows[1]
+
+    volunteering = client.get("/history/volunteering?status=accepted")
+    assert "Showing 2 of 4 applications" in flat(volunteering)
+    assert client.get("/history/volunteering.csv").mimetype == "text/csv"
+
+    with app.app_context():
+        mine = db.session.scalar(
+            db.select(User).where(User.email == "goer@example.com")
+        )
+        pending = next(a for a in mine.applications if a.status == "pending")
+        decided = next(a for a in mine.applications if a.status == "accepted")
+        other = db.session.scalar(
+            db.select(VolunteerApplication).where(
+                VolunteerApplication.user_id != mine.id
+            )
+        )
+        pending_id, decided_id, other_id = pending.id, decided.id, other.id
+    assert post(client, f"/applications/{other_id}/withdraw").status_code == 403
+    assert post(client, f"/applications/{decided_id}/withdraw").status_code == 409
+    done = post(client, f"/applications/{pending_id}/withdraw", follow_redirects=True)
+    assert b"was withdrawn" in done.data
+    with app.app_context():
+        assert db.session.get(VolunteerApplication, pending_id) is None
+
+
+def test_organization_sees_only_its_own_donations(client):
+    login(client, "organization@example.com")
+    page = client.get("/organization/donations")
+    assert page.status_code == 200
+    assert b"Total received" in page.data
+    assert b"Dinner for the Unhoused" not in page.data
+    assert client.get("/organization/donations?fundraiser=999").status_code == 200
+    client.get("/")
+    post(client, "/logout")
+    login(client)
+    assert client.get("/organization/donations").status_code == 403
+
+
+def test_static_files_are_cacheable_and_pages_are_compressed(client):
+    home = client.get("/home", headers={"Accept-Encoding": "gzip"})
+    assert home.headers.get("Content-Encoding") == "gzip"
+    assert b"opt/children.webp" in __import__("gzip").decompress(home.data)
+    asset = client.get("/static/css/style.css")
+    assert "max-age=31536000" in asset.headers["Cache-Control"]

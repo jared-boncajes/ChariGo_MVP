@@ -1,5 +1,7 @@
 # Validation evidence
 
+> **November 11, 2026 update.** The interface was rebuilt (responsive navigation, new stylesheet, WebP image copies, history filters / CSV export / withdrawal, donations received, deployment files). Current evidence: `python -m pytest -q` passes 21 tests; a Chromium pass over 40 pages at 320, 375, 430, 768, 1024 and 1440 pixels under `gunicorn wsgi:app` found no horizontal overflow, broken images or script errors, and completed the donation, filter, CSV and withdraw flows. The optional `tests/browser_check.py` script was removed because it targeted the old markup. The remainder of this file records the October 31 validation of the previous interface, including checks (axe-core scan, byte-identical image serving) that have not been repeated.
+
 Validated in the current cloud machine on October 31, 2026 using Python 3.12.14, Flask 3.1.2, Flask-SQLAlchemy 3.1.1, SQLite and Chromium. This is local runtime validation; no deployment, GitHub push, fresh-task snapshot restoration or environment publication is claimed.
 
 | Check | Outcome |

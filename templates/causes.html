@@ -1,7 +1,7 @@
 {% extends 'base.html' %}{% from 'components/ui.html' import heading,fundraiser_card,empty with context %}
 {% block content %}
     {{ heading('Explore Charities',url_for('goer.home') ) }}
-    <form class="filter-form cause-filters" method="get">
+    <form class="filter-form cause-filters" method="get" data-autosubmit>
         <label class="field search-field">
             <span>Search causes</span>
             <input name="q"
@@ -46,8 +46,9 @@
     <div class="categories">
         {% for label,icon in categories.items() %}
             <a class="category {{ 'selected' if label == selected_category else '' }}"
-               href="{{ url_for('goer.causes',category=label) }}">
-                <img src="{{ url_for('static',filename='icons/'+icon+'.svg') }}" alt="">
+               {% if label == selected_category %}aria-current="true"{% endif %}
+               href="{{ url_for('goer.causes',category='' if label == selected_category else label) }}">
+                <img src="{{ url_for('static',filename='icons/'+icon+'.svg') }}" alt="" width="56" height="56">
                 <span>{{ label }}</span></a>
         {% endfor %}
     </div>
