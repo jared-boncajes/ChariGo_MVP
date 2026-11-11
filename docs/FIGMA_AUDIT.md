@@ -2,6 +2,18 @@
 
 Source: uploaded `CHARIGO_High Fidelity (1).fig`, exported October 31, 2026. Decoded its complete Kiwi schema and 1,109 nodes, inspected all 25 application frames, 8 component/legend boards, 2 standalone cards and 40 symbols (including nested variants). `figma-inventory.json` preserves the actual frame names, IDs and text. The supplied updated specification in `specification.md` governs functionality.
 
+## November 2026 comparison with the live prototype
+
+The app was compared frame by frame with the Figma file `0BwLZRjE0ir7x0JYysSEiT` (same 25 application frames and node IDs as the archive audited below). Phone layouts follow the frames: soft pink top band, pink-outlined cards and action rows, soft pink impact panels and stat tiles, rounded tab bar with white icons, pill search field, edge-to-edge cover photo with an overlaid back button, grouped payment-method list, and the history summary panel above "Recent donations" / "Recent activities".
+
+Deliberate differences, each for usability or accessibility:
+
+- Button and badge text is dark or green rather than white on pink; white on `#F77492` is about 2.9:1 contrast, below the WCAG AA minimum.
+- Tab bar icons keep short text labels (Home, Explore, Profile) for recognition.
+- The Monthly donation toggle and the Google/Facebook buttons are omitted because nothing backs them; payments are simulated and one-time.
+- History adds a fold-away search and filter control, receipts, CSV export and withdrawal, which the frames do not show.
+- Screens wider than 640px and 900px are an adaptation: Figma only defines the 390px phone frames.
+
 ## Visual system
 
 Inter; primary #F77492, primary-soft #FEB5C6, success #03541C, black text, muted #535353, gray #D9D9D9, white surface. 8-point spacing with 4px details. H1 28/34 bold, H2 20/24 bold, section 16/20 semibold, body 14/20, caption 11/16. Pink outlined white cards, soft pink summary panels, pill buttons, circular initials and icons. Goer navigation: home, explore, profile; organization: home/current fundraisers, create, profile. Retain bottom navigation at all sizes, with centered width; wider content and card grids provide responsive adaptation without a new information architecture.

@@ -1,46 +1,55 @@
 {% extends 'base.html' %}{% from 'components/ui.html' import heading,fundraiser_card,empty with context %}
 {% block content %}
     {{ heading('Explore Charities',url_for('goer.home') ) }}
-    <form class="filter-form cause-filters" method="get" data-autosubmit>
-        <label class="field search-field">
-            <span>Search causes</span>
-            <input name="q"
+    <form class="cause-filters" method="get" data-autosubmit>
+        <div class="search-form" role="search">
+            <label class="sr-only" for="cause-search">Search causes</label>
+            <span class="icon icon-search" aria-hidden="true"></span>
+            <input id="cause-search"
+                   name="q"
                    type="search"
                    value="{{ q }}"
                    placeholder="Search charities, causes, or a location">
-        </label>
-        <label class="field">
-            <span>Organization</span>
-            <select name="organization">
-                <option value="">All organizations</option>
-                {% for org in organizations %}
-                    <option value="{{ org.id }}"
-                            {% if organization_id == org.id %}selected{% endif %}>{{ org.name }}</option>
-                {% endfor %}
-            </select>
-        </label>
-        <label class="field">
-            <span>Category</span>
-            <select name="category">
-                <option value="">All categories</option>
-                {% for category in categories %}
-                    <option {% if selected_category == category %}selected{% endif %}>{{ category }}</option>
-                {% endfor %}
-            </select>
-        </label>
-        <div class="filter-actions">
-            <label class="checkbox">
-                <input type="checkbox"
-                       name="volunteer"
-                       value="1"
-                       {% if request.args.get('volunteer') %}checked{% endif %}>
-                Volunteers needed
-            </label>
-            <div class="filter-buttons">
-                <button class="button" type="submit">Search</button>
-                <a class="button secondary" href="{{ url_for('goer.causes') }}">Reset</a>
-            </div>
+            <button class="button search-submit" type="submit">Search</button>
         </div>
+        {% set narrowed = organization_id or selected_category or request.args.get('volunteer') %}
+        <details class="filter-toggle" {% if narrowed %}open{% endif %}>
+            <summary>Filters{% if narrowed %} · on{% endif %}</summary>
+            <div class="filter-form">
+                <label class="field">
+                    <span>Organization</span>
+                    <select name="organization">
+                        <option value="">All organizations</option>
+                        {% for org in organizations %}
+                            <option value="{{ org.id }}"
+                                    {% if organization_id == org.id %}selected{% endif %}>{{ org.name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label class="field">
+                    <span>Category</span>
+                    <select name="category">
+                        <option value="">All categories</option>
+                        {% for category in categories %}
+                            <option {% if selected_category == category %}selected{% endif %}>{{ category }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <div class="filter-actions">
+                    <label class="checkbox">
+                        <input type="checkbox"
+                               name="volunteer"
+                               value="1"
+                               {% if request.args.get('volunteer') %}checked{% endif %}>
+                        Volunteers needed
+                    </label>
+                    <div class="filter-buttons">
+                        <button class="button small" type="submit">Apply</button>
+                        <a class="button secondary small" href="{{ url_for('goer.causes') }}">Reset</a>
+                    </div>
+                </div>
+            </div>
+        </details>
     </form>
     <h2>Categories</h2>
     <div class="categories">

@@ -1,9 +1,9 @@
 {% extends 'base.html' %}{% from 'components/ui.html' import heading,progress,badge with context %}
 {% block content %}
-    <div class="narrow-wide">
+    <div class="narrow-wide {{ '' if manage else 'cover-page' }}">
         {{ heading('Manage Fundraiser' if manage else 'Fundraiser',url_for('organization.fundraisers') if manage else url_for('goer.causes')) }}
         <div class="detail-grid">
-            <img class="detail-cover"
+            <img class="detail-cover cover-bleed"
                  src="{{ image_url(fundraiser.cover_image) }}"
                  alt="{{ fundraiser.title }}">
             <section class="detail-copy">

@@ -2,7 +2,7 @@
 
 ChariGo connects **Charity Goers**, verified **charity organizations** and **administrators**: browse causes, make (simulated) donations, apply to volunteer, and follow everything in a searchable history. It is a Flask + SQLite app with server-rendered pages and no frontend framework, so it runs anywhere Python does.
 
-The interface follows the ChariGo Figma design (Inter, pink `#F77492` / `#FEB5C6`, green `#03541C`, the clover logo and the original photos and icons) and adapts to the screen: a bottom tab bar on phones, a top navigation bar and multi-column layouts on tablets and PCs.
+The interface follows the [ChariGo Figma prototype](https://www.figma.com/proto/0BwLZRjE0ir7x0JYysSEiT?node-id=0-1) (Inter, pink `#F77492` / `#FEB5C6`, green `#03541C`, the clover logo and the original photos and icons) and adapts to the screen: a bottom tab bar on phones, a top navigation bar and multi-column layouts on tablets and PCs.
 
 ## Quick start (local Flask)
 

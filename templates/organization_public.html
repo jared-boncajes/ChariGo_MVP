@@ -1,8 +1,8 @@
 {% extends 'base.html' %}{% from 'components/ui.html' import heading,avatar,badge,csrf,fundraiser_card,empty with context %}
 {% block content %}
-    <div class="narrow-wide">
+    <div class="narrow-wide cover-page">
         {{ heading('Organization',url_for('goer.causes') ) }}
-        <img class="organization-banner"
+        <img class="organization-banner cover-bleed"
              src="{{ image_url(org.banner) }}"
              alt="{{ org.name }} community">
         <section class="organization-identity card">

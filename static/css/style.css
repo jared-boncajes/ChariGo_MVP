@@ -17,14 +17,16 @@
   --text: #151515;
   --muted: #535353;
   --gray: #d9d9d9;
-  --line: #f3d3da;
+  --line: #f77492;
+  --tile: #ffd3dc;
   --paper: #fff;
-  --canvas: #fffafb;
+  --canvas: #fff;
   --danger: #a11a2c;
   --radius: 16px;
   --radius-small: 10px;
-  --shadow: 0 1px 2px #55313a0f, 0 6px 20px #55313a0f;
+  --shadow: 0 4px 16px #55313a0a;
   --shadow-raised: 0 2px 4px #55313a14, 0 14px 32px #55313a1f;
+  --gutter: 16px;
   --header-height: 64px;
   --tabbar-height: 64px;
   --ease: 160ms cubic-bezier(0.2, 0, 0, 1);
@@ -217,7 +219,8 @@ a:hover {
   z-index: 30;
   /* No backdrop-filter here: it would trap the fixed tab bar inside the header. */
   background: #fff;
-  border-bottom: 1px solid var(--line);
+  /* The soft pink band that tops every Figma frame. */
+  border-top: 14px solid var(--soft);
   view-transition-name: site-header;
 }
 .header-inner {
@@ -297,7 +300,8 @@ a:hover {
   display: flex;
   background: var(--soft);
   padding-bottom: env(safe-area-inset-bottom);
-  box-shadow: 0 -4px 20px #55313a1f;
+  border-radius: 18px 18px 0 0;
+  overflow: hidden;
   view-transition-name: main-nav;
 }
 .main-nav a {
@@ -308,10 +312,21 @@ a:hover {
   align-items: center;
   justify-content: center;
   gap: 4px;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 650;
   color: var(--text);
   transition: background var(--ease);
+}
+.main-nav .icon {
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+}
+.main-nav .icon-plus {
+  width: 24px;
+  height: 24px;
+  margin: 2px;
 }
 .main-nav a:hover {
   text-decoration: none;
@@ -435,7 +450,7 @@ section > h2,
   border-radius: 50%;
   border: 1.5px solid var(--pink);
   background: #fff;
-  color: var(--text);
+  color: var(--pink);
   transition:
     background var(--ease),
     transform var(--ease);
@@ -522,10 +537,9 @@ section > h2,
 /* Cards and surfaces */
 .card {
   background: var(--paper);
-  border: 1px solid var(--line);
+  border: 1.5px solid var(--line);
   border-radius: var(--radius);
   padding: 18px;
-  box-shadow: var(--shadow);
 }
 .card > * + * {
   margin-top: 10px;
@@ -549,8 +563,8 @@ section > h2,
   font-size: 17px;
 }
 .impact-panel {
-  background: var(--blush);
-  border: 1px solid var(--soft);
+  background: var(--soft);
+  border: 1.5px solid var(--pink);
   border-radius: var(--radius);
   padding: 16px 18px;
 }
@@ -596,37 +610,28 @@ section > h2,
   font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
-  background: var(--blush);
-  color: var(--pink-dark);
-  border: 1px solid var(--soft);
+  background: var(--soft);
+  color: var(--green);
+  border: 1px solid transparent;
 }
-.badge::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  margin-right: 6px;
-  border-radius: 50%;
-  background: currentColor;
+.badge {
+  border-radius: 8px;
+  padding: 4px 10px;
 }
 .badge.pending,
 .badge.upcoming {
   background: #fff0c9;
-  border-color: #efd58b;
   color: #664600;
 }
 .badge.rejected,
 .badge.removed,
 .badge.inactive {
   background: #ffe4e4;
-  border-color: #f2b9b9;
   color: #831919;
 }
 .badge.verified,
-.badge.accepted,
-.badge.active,
-.badge.completed {
+.badge.accepted {
   background: var(--green-soft);
-  border-color: #b9dcb7;
   color: var(--green);
 }
 .avatar {
@@ -638,8 +643,8 @@ section > h2,
   overflow: hidden;
   border-radius: 50%;
   background: var(--soft);
-  border: 2px solid var(--pink);
-  color: var(--pink-dark);
+  border: 1.5px solid var(--pink);
+  color: var(--green);
   font-weight: 800;
 }
 .avatar.large {
@@ -804,7 +809,10 @@ legend {
 }
 .search-form input {
   border-radius: 999px;
-  border-color: var(--pink);
+  border: 2px solid var(--pink);
+}
+.search-form input::placeholder {
+  color: #f995ac;
 }
 .search-form .icon {
   position: absolute;
@@ -813,8 +821,17 @@ legend {
   translate: 0 -50%;
   width: 16px;
   height: 16px;
-  color: var(--pink-dark);
+  color: var(--pink);
   pointer-events: none;
+}
+.cause-filters > * + * {
+  margin-top: 12px;
+}
+.filter-toggle .filter-form,
+.filter-toggle .history-filters {
+  padding: 14px;
+  border: 1.5px solid var(--soft);
+  border-radius: var(--radius);
 }
 .search-form .icon + input {
   padding-left: 42px;
@@ -830,10 +847,6 @@ legend {
 .history-filters {
   display: grid;
   gap: 12px;
-  padding: 16px;
-  background: var(--blush);
-  border: 1px solid var(--soft);
-  border-radius: var(--radius);
   align-items: end;
 }
 .filter-form > * + *,
@@ -929,10 +942,6 @@ dialog .actions {
 .tabs {
   display: flex;
   gap: 4px;
-  padding: 4px;
-  background: var(--blush);
-  border: 1px solid var(--soft);
-  border-radius: 999px;
   width: fit-content;
   max-width: 100%;
   overflow-x: auto;
@@ -940,20 +949,20 @@ dialog .actions {
 }
 .tabs a {
   flex: none;
-  padding: 9px 18px;
+  padding: 8px 22px;
   border-radius: 999px;
-  color: var(--muted);
-  font-weight: 650;
+  color: var(--text);
+  font-weight: 600;
   transition: background var(--ease);
 }
 .tabs a:hover {
   text-decoration: none;
-  color: var(--text);
-  background: #fff;
+  background: var(--blush);
 }
 .tabs a[aria-current] {
-  background: var(--pink);
-  color: var(--text);
+  background: var(--soft);
+  color: var(--green);
+  font-weight: 700;
 }
 
 /* Statistics */
@@ -972,8 +981,8 @@ dialog .actions {
   gap: 2px;
   padding: 14px;
   min-width: 0;
-  background: var(--blush);
-  border: 1px solid var(--soft);
+  background: var(--tile);
+  border: 1.5px solid var(--pink);
   border-radius: var(--radius);
   color: var(--text);
 }
@@ -987,9 +996,9 @@ dialog .actions {
   overflow-wrap: anywhere;
 }
 .stat span {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
 }
 a.stat {
   transition:
@@ -1006,10 +1015,17 @@ a.stat:hover {
 .hero {
   display: grid;
   gap: 16px;
-  padding: 22px 18px;
-  border-radius: 24px;
-  background: linear-gradient(135deg, #ffe3ea 0%, #fff4f6 55%, #eaf6e9 100%);
-  border: 1px solid var(--soft);
+}
+.hero h1,
+.hero .eyebrow,
+.hero .muted,
+.hero-impact,
+.home-categories,
+.search-form .button.search-submit {
+  display: none;
+}
+.hero-copy .search-form {
+  margin-top: 0;
 }
 .hero-copy > * + * {
   margin-top: 8px;
@@ -1035,8 +1051,8 @@ a.stat:hover {
 }
 .categories {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 10px;
 }
 .category {
   display: flex;
@@ -1045,10 +1061,10 @@ a.stat:hover {
   gap: 6px;
   padding: 12px 6px;
   border-radius: var(--radius);
-  border: 1px solid transparent;
-  background: #fff;
+  border: 1.5px solid transparent;
   color: var(--text);
   font-size: 12.5px;
+  font-weight: 700;
   text-align: center;
   line-height: 1.25;
   transition:
@@ -1057,14 +1073,13 @@ a.stat:hover {
     border-color var(--ease);
 }
 .category img {
-  width: 52px;
-  height: 52px;
+  width: 64px;
+  height: 64px;
 }
 .category:hover {
   text-decoration: none;
-  border-color: var(--soft);
+  background: var(--blush);
   transform: translateY(-2px);
-  box-shadow: var(--shadow);
 }
 .category.selected {
   background: var(--blush);
@@ -1078,7 +1093,7 @@ a.stat:hover {
   min-height: 190px;
   background: #5b1a3a;
   color: #fff;
-  box-shadow: var(--shadow);
+  border: 2px solid var(--pink);
 }
 .foundation-banner img {
   position: absolute;
@@ -1128,9 +1143,8 @@ a.stat:hover {
   flex-direction: column;
   overflow: hidden;
   background: #fff;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
   transition:
     transform var(--ease),
     box-shadow var(--ease);
@@ -1141,7 +1155,9 @@ a.stat:hover {
 }
 .campaign-main {
   display: grid;
-  grid-template-columns: 112px 1fr;
+  grid-template-columns: 96px 1fr;
+  gap: 12px;
+  padding: 12px 12px 0;
   color: var(--text);
   font-weight: 400;
   flex: 1;
@@ -1152,12 +1168,15 @@ a.stat:hover {
 .campaign-media {
   position: relative;
   display: block;
-  background: var(--blush);
+  align-self: start;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--soft);
 }
 .campaign-thumb {
   width: 100%;
   height: 100%;
-  min-height: 120px;
   position: absolute;
   inset: 0;
   object-fit: cover;
@@ -1184,8 +1203,10 @@ a.stat:hover {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 14px;
   min-width: 0;
+}
+.campaign-media .chip {
+  display: none;
 }
 .campaign-org {
   font-size: 13px;
@@ -1200,7 +1221,7 @@ a.stat:hover {
   font-size: 13.5px;
 }
 .campaign-foot {
-  padding: 0 14px 14px;
+  padding: 10px 12px 12px;
 }
 .card-foot {
   display: flex;
@@ -1226,21 +1247,21 @@ progress {
   width: 100%;
   height: 10px;
   appearance: none;
-  border: 0;
+  border: 1px solid var(--pink);
   border-radius: 999px;
   overflow: hidden;
-  background: #fde4ea;
+  background: #fff;
   color: var(--pink);
 }
 progress::-webkit-progress-bar {
-  background: #fde4ea;
+  background: #fff;
 }
 progress::-webkit-progress-value {
-  background: linear-gradient(90deg, var(--soft), var(--pink));
+  background: #f9a3b6;
   border-radius: 999px;
 }
 progress::-moz-progress-bar {
-  background: var(--pink);
+  background: #f9a3b6;
   border-radius: 999px;
 }
 .progress-label {
@@ -1276,10 +1297,46 @@ progress::-moz-progress-bar {
   max-height: 360px;
   object-fit: cover;
   border-radius: 20px;
-  box-shadow: var(--shadow);
 }
 .organization-banner {
   aspect-ratio: 16 / 6;
+}
+/* Phones: the photo runs edge to edge under the back button, as in Figma. */
+.cover-page {
+  position: relative;
+}
+.cover-page > .page-heading {
+  position: absolute;
+  z-index: 2;
+  top: 12px;
+  left: 0;
+  margin: 0;
+}
+.cover-page > .page-heading h1 {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.cover-page .cover-bleed {
+  width: calc(100% + 2 * var(--gutter));
+  max-width: none;
+  margin: -20px calc(-1 * var(--gutter)) 0;
+  border-radius: 0 0 0 28px;
+  aspect-ratio: 4 / 3;
+  display: block;
+}
+.cover-page .organization-banner.cover-bleed {
+  aspect-ratio: 16 / 8;
+  border-radius: 0;
+}
+.cover-page .organization-identity {
+  position: relative;
+  margin-top: -36px;
+}
+.cover-page > .page-heading + .detail-grid {
+  margin-top: 0;
 }
 .detail-copy .location {
   color: var(--muted);
@@ -1289,10 +1346,9 @@ progress::-moz-progress-bar {
 }
 .action-panel {
   background: #fff;
-  border: 1px solid var(--line);
+  border: 1.5px solid var(--line);
   border-radius: var(--radius);
   padding: 18px;
-  box-shadow: var(--shadow);
   align-self: start;
 }
 .action-panel > * + * {
@@ -1326,7 +1382,7 @@ progress::-moz-progress-bar {
   min-height: 54px;
   padding: 12px 16px;
   background: #fff;
-  border: 1px solid var(--line);
+  border: 1.5px solid var(--line);
   border-radius: 14px;
   color: var(--text);
   transition:
@@ -1341,8 +1397,9 @@ progress::-moz-progress-bar {
 }
 .action-row > span:last-child,
 .activity-row > span:last-child {
-  color: var(--pink-dark);
-  font-size: 20px;
+  color: var(--pink);
+  font-size: 24px;
+  line-height: 1;
   transition: transform var(--ease);
 }
 .action-row:hover > span:last-child,
@@ -1390,8 +1447,8 @@ progress::-moz-progress-bar {
   background: var(--blush);
 }
 .choice input:checked + span {
-  background: var(--pink);
-  box-shadow: 0 4px 14px #f7749255;
+  background: var(--soft);
+  color: var(--green);
 }
 .choice input:focus-visible + span {
   outline: 3px solid var(--green);
@@ -1399,7 +1456,14 @@ progress::-moz-progress-bar {
 }
 .payment-methods {
   display: grid;
-  gap: 8px;
+  border: 1.5px solid var(--pink);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.payment-methods legend {
+  float: left;
+  width: 100%;
+  padding: 12px 16px 0;
 }
 .payment-methods > * + * {
   margin-top: 0;
@@ -1409,19 +1473,21 @@ progress::-moz-progress-bar {
   align-items: center;
   gap: 12px;
   min-height: 50px;
-  padding: 10px 14px;
-  border: 1.5px solid var(--gray);
-  border-radius: 14px;
+  padding: 10px 16px;
   background: #fff;
-  font-weight: 600;
-  transition: border-color var(--ease);
+  transition: background var(--ease);
+}
+.payment-choice span {
+  order: -1;
+  flex: 1;
 }
 .payment-choice:hover {
-  border-color: var(--pink);
+  background: var(--blush);
 }
 .payment-choice:has(input:checked) {
-  border-color: var(--pink-dark);
-  background: var(--blush);
+  background: var(--soft);
+  color: var(--green);
+  font-weight: 700;
 }
 .review-card dd strong {
   font-size: 18px;
@@ -1443,7 +1509,7 @@ progress::-moz-progress-bar {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: var(--green-soft);
+  background: #f995ac;
   color: var(--green);
   font-size: 40px;
   font-weight: 800;
@@ -1462,12 +1528,35 @@ progress::-moz-progress-bar {
 .history-card > * + * {
   margin-top: 0;
 }
-.history-thumb {
-  width: 64px;
-  height: 64px;
-  flex: none;
-  object-fit: cover;
-  border-radius: 12px;
+/* Search and filters fold away so the list looks like the Figma frame. */
+.filter-toggle > summary {
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 6px 16px;
+  border: 1.5px solid var(--pink);
+  border-radius: 999px;
+  width: auto;
+}
+.filter-toggle > summary::-webkit-details-marker {
+  display: none;
+}
+.filter-toggle[open] > summary {
+  background: var(--soft);
+  margin-bottom: 12px;
+}
+.summary-panel strong {
+  display: block;
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 800;
+  color: var(--green);
+}
+.summary-panel h2 {
+  font-size: 13px;
+  color: var(--text);
 }
 .history-main {
   flex: 1;
@@ -1753,12 +1842,57 @@ progress::-moz-progress-bar {
   }
   .campaign-media {
     aspect-ratio: 16 / 9;
+    align-self: auto;
+  }
+  .campaign-media .chip {
+    display: block;
   }
   .categories {
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
+  .cover-page > .page-heading {
+    position: static;
+  }
+  .cover-page > .page-heading h1 {
+    position: static;
+    width: auto;
+    height: auto;
+    clip-path: none;
+  }
+  .cover-page .cover-bleed,
+  .cover-page .organization-banner.cover-bleed {
+    width: 100%;
+    margin: 0;
+    border-radius: 20px;
+    aspect-ratio: 16 / 10;
+  }
+  .cover-page .organization-banner.cover-bleed {
+    aspect-ratio: 16 / 6;
+  }
+  .cover-page .organization-identity {
+    margin-top: 20px;
+  }
+  .cover-page > .page-heading + .detail-grid {
+    margin-top: 20px;
+  }
   .hero {
     padding: 32px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #ffe3ea 0%, #fff4f6 55%, #eaf6e9 100%);
+    border: 1px solid var(--soft);
+  }
+  .hero h1,
+  .hero .eyebrow,
+  .hero .muted,
+  .home-categories,
+  .search-form .button.search-submit {
+    display: revert;
+  }
+  .hero .search-form .button.search-submit {
+    display: inline-flex;
+  }
+  .hero-copy .search-form {
+    margin-top: 16px;
   }
   .hero h1 {
     font-size: 32px;
@@ -1786,15 +1920,8 @@ progress::-moz-progress-bar {
     grid-template-columns: 1fr 1fr;
     align-items: start;
   }
-  .payment-methods {
-    grid-template-columns: 1fr 1fr;
-  }
   .amount-grid {
     grid-template-columns: repeat(6, 1fr);
-  }
-  .history-thumb {
-    width: 84px;
-    height: 84px;
   }
   .auth-panel {
     padding: 36px;
@@ -1835,6 +1962,7 @@ progress::-moz-progress-bar {
     background: none;
     box-shadow: none;
     overflow: visible;
+    border-radius: 0;
   }
   .main-nav a,
   .main-nav.text-nav a {
@@ -1858,21 +1986,30 @@ progress::-moz-progress-bar {
     background: var(--soft);
     color: var(--text);
   }
-  .main-nav .icon {
+  .main-nav .icon,
+  .main-nav .icon-plus {
     width: 18px;
     height: 18px;
     margin: 0;
+    color: currentColor;
+  }
+  .site-header {
+    border-top-width: 6px;
+    border-bottom: 1px solid #f3d3da;
   }
   .account-text {
     display: block;
   }
   .account-chip {
-    border: 1px solid var(--line);
+    border: 1px solid #f3d3da;
     background: #fff;
   }
   .campaign-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 20px;
+  }
+  .hero-impact {
+    display: block;
   }
   .hero {
     grid-template-columns: 1fr 320px;
@@ -1915,6 +2052,9 @@ progress::-moz-progress-bar {
 }
 
 @media (max-width: 380px) {
+  :root {
+    --gutter: 12px;
+  }
   .header-inner {
     padding-inline: 12px;
   }
@@ -1922,7 +2062,7 @@ progress::-moz-progress-bar {
     padding-inline: 12px;
   }
   .campaign-main {
-    grid-template-columns: 92px 1fr;
+    grid-template-columns: 80px 1fr;
   }
   .stat strong {
     font-size: 18px;

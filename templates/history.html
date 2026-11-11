@@ -8,61 +8,69 @@
                {% if kind == 'donation' %}aria-current="page"{% endif %}>Donations</a><a href="{{ url_for('goer.volunteer_history') }}"
    {% if kind == 'volunteer' %}aria-current="page"{% endif %}>Volunteering</a>
         </nav>
-        <div class="stats-grid">
+        <section class="impact-panel summary-panel">
             {% if kind == 'donation' %}
-                {{ stat(total|peso, 'Total Donated') }}
-                {{ stat(everything|length, 'Donations') }}
-                {{ stat(charities, 'Charities supported') }}
+                <h2>Total Donated</h2>
+                <strong>{{ total|peso }}</strong>
+                <p>
+                    Across {{ everything|length }} donation{{ '' if everything|length == 1 else 's' }} to {{ charities }} {{ 'charity' if charities == 1 else 'charities' }}
+                </p>
             {% else %}
-                {{ stat(everything|length, 'Applications') }}
-                {{ stat(total, 'Accepted Applications') }}
-                {{ stat(pending, 'Awaiting a decision') }}
+                <h2>Accepted Applications</h2>
+                <strong>{{ total }}</strong>
+                <p>
+                    {{ everything|length }} application{{ '' if everything|length == 1 else 's' }} in total · {{ pending }} awaiting a decision
+                </p>
             {% endif %}
-        </div>
+        </section>
         {% if everything %}
-            <form class="history-filters" method="get" data-autosubmit>
-                <label class="field search-field">
-                    <span>Search</span>
-                    <input type="search"
-                           name="q"
-                           value="{{ filters.q }}"
-                           maxlength="100"
-                           placeholder="{{ 'Charity, fundraiser or reference no.' if kind == 'donation' else 'Opportunity, charity or location' }}">
-                </label>
-                <label class="field">
-                    <span>Period</span>
-                    <select name="period">
-                        <option value="">All time</option>
-                        {% for value,label in periods.items() %}
-                            <option value="{{ value }}"
-                                    {% if filters.period == value %}selected{% endif %}>{{ label }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-                {% if kind == 'donation' %}
+            <details class="filter-toggle" {% if filtered or filters.get('sort','newest') != 'newest' %}open{% endif %}>
+                <summary>Search and filter{% if filtered %} · on{% endif %}</summary>
+                <form class="history-filters" method="get" data-autosubmit>
+                    <label class="field search-field">
+                        <span>Search</span>
+                        <input type="search"
+                               name="q"
+                               value="{{ filters.q }}"
+                               maxlength="100"
+                               placeholder="{{ 'Charity, fundraiser or reference no.' if kind == 'donation' else 'Opportunity, charity or location' }}">
+                    </label>
                     <label class="field">
-                        <span>Sort by</span>
-                        <select name="sort">
-                            {% for value,label in [('newest','Newest first'),('oldest','Oldest first'),('highest','Highest amount')] %}
+                        <span>Period</span>
+                        <select name="period">
+                            <option value="">All time</option>
+                            {% for value,label in periods.items() %}
                                 <option value="{{ value }}"
-                                        {% if filters.sort == value %}selected{% endif %}>{{ label }}</option>
+                                        {% if filters.period == value %}selected{% endif %}>{{ label }}</option>
                             {% endfor %}
                         </select>
                     </label>
-                {% else %}
-                    <label class="field">
-                        <span>Status</span>
-                        <select name="status">
-                            <option value="">All statuses</option>
-                            {% for value in ['pending','accepted','rejected'] %}
-                                <option value="{{ value }}"
-                                        {% if filters.status == value %}selected{% endif %}>{{ value|title }}</option>
-                            {% endfor %}
-                        </select>
-                    </label>
-                {% endif %}
-                <button class="button">Apply</button>
-            </form>
+                    {% if kind == 'donation' %}
+                        <label class="field">
+                            <span>Sort by</span>
+                            <select name="sort">
+                                {% for value,label in [('newest','Newest first'),('oldest','Oldest first'),('highest','Highest amount')] %}
+                                    <option value="{{ value }}"
+                                            {% if filters.sort == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </label>
+                    {% else %}
+                        <label class="field">
+                            <span>Status</span>
+                            <select name="status">
+                                <option value="">All statuses</option>
+                                {% for value in ['pending','accepted','rejected'] %}
+                                    <option value="{{ value }}"
+                                            {% if filters.status == value %}selected{% endif %}>{{ value|title }}</option>
+                                {% endfor %}
+                            </select>
+                        </label>
+                    {% endif %}
+                    <button class="button">Apply</button>
+                </form>
+            </details>
+            <h2>{{ 'Recent donations' if kind == 'donation' else 'Recent activities' }}</h2>
             <div class="section-heading">
                 <p class="muted result-count" aria-live="polite">
                     Showing {{ items|length }} of {{ everything|length }}
@@ -83,21 +91,20 @@
                 {% for item in entries %}
                     {% if kind == 'donation' %}
                         <article class="card history-card">
-                            <img class="history-thumb"
-                                 src="{{ image_url(item.fundraiser.cover_image) }}"
-                                 alt=""
-                                 loading="lazy">
                             <div class="history-main">
                                 <div class="row-between">
                                     <h3>{{ item.fundraiser.organization.name }}</h3>
                                     <strong class="green amount">{{ item.amount_cents|peso }}</strong>
                                 </div>
                                 <p>{{ item.fundraiser.title }}</p>
-                                <small>{{ item.created_at|localtime }} · {{ item.payment_method }} · Ref. {{ item.reference }}
-                                    {% if item.anonymous %}· Anonymous{% endif %}
-                                </small>
                                 <div class="row-between history-foot">
+                                    <small>{{ item.created_at|localdate }} · {{ item.payment_method }}
+                                        {% if item.anonymous %}· Anonymous{% endif %}
+                                    </small>
                                     {{ badge("completed") }}
+                                </div>
+                                <div class="row-between history-foot">
+                                    <small>Ref. {{ item.reference }}</small>
                                     <span class="history-links">
                                         {% if item.fundraiser.accepting %}
                                             <a class="text-link"
@@ -110,10 +117,6 @@
                         </article>
                     {% else %}
                         <article class="card history-card">
-                            <img class="history-thumb"
-                                 src="{{ image_url(item.opportunity.fundraiser.cover_image) }}"
-                                 alt=""
-                                 loading="lazy">
                             <div class="history-main">
                                 <div class="row-between">
                                     <h3>{{ item.opportunity.title }}</h3>

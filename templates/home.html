@@ -14,7 +14,7 @@
                        name="q"
                        type="search"
                        placeholder="Search causes, charities, or a location">
-                <button class="button" aria-label="Search causes">Search</button>
+                <button class="button search-submit" aria-label="Search causes">Search</button>
             </form>
         </div>
         {% if current_user and current_user.role == 'charity_goer' %}
@@ -28,7 +28,7 @@
             </aside>
         {% endif %}
     </section>
-    <section aria-labelledby="browse-heading">
+    <section class="home-categories" aria-labelledby="browse-heading">
         <div class="section-heading">
             <h2 id="browse-heading">Browse by category</h2>
         </div>
