@@ -4,7 +4,6 @@ import secrets
 import sqlite3
 from datetime import datetime
 from pathlib import Path
-from zoneinfo import ZoneInfo
 
 import click
 from flask import (
@@ -22,6 +21,7 @@ from flask import (
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import SQLAlchemyError
+from common import MANILA
 from models import db, User
 
 
@@ -157,16 +157,14 @@ def create_app(test_config=None):
         if isinstance(value, datetime):
             from datetime import timezone
 
-            value = value.replace(tzinfo=timezone.utc).astimezone(
-                ZoneInfo("Asia/Manila")
-            )
+            value = value.replace(tzinfo=timezone.utc).astimezone(MANILA)
         return value.strftime("%b %d, %Y")
 
     @app.template_filter("localtime")
     def localtime(value):
         from datetime import timezone
 
-        value = value.replace(tzinfo=timezone.utc).astimezone(ZoneInfo("Asia/Manila"))
+        value = value.replace(tzinfo=timezone.utc).astimezone(MANILA)
         return value.strftime("%b %d, %Y · %I:%M %p PHT")
 
     @app.route("/uploads/<name>")

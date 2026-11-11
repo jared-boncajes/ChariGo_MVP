@@ -2,7 +2,6 @@ import csv
 import io
 import secrets
 from datetime import date, datetime, timedelta, timezone
-from zoneinfo import ZoneInfo
 
 from flask import (
     Blueprint,
@@ -19,6 +18,7 @@ from flask import (
 from sqlalchemy.exc import IntegrityError
 from common import (
     CATEGORIES,
+    MANILA,
     PAYMENT_METHODS,
     commit,
     email,
@@ -387,7 +387,6 @@ def application_success(aid):
 
 
 PERIODS = {"30": "Last 30 days", "90": "Last 90 days", "365": "Last 12 months"}
-MANILA = ZoneInfo("Asia/Manila")
 
 
 def local(moment):

@@ -1,6 +1,7 @@
 import functools
 import re
 import secrets
+from datetime import timedelta, timezone
 from decimal import Decimal, InvalidOperation
 from io import BytesIO
 from pathlib import Path
@@ -8,6 +9,10 @@ from pathlib import Path
 from flask import abort, current_app, flash, g, redirect, request, url_for
 from PIL import Image, UnidentifiedImageError
 from models import db, SystemRecord
+
+# Philippine time is UTC+8 all year (no daylight saving), so a fixed offset is
+# exact and avoids needing a time-zone database, which Windows does not ship.
+MANILA = timezone(timedelta(hours=8), "PHT")
 
 CATEGORIES = {
     "Children": "children",
