@@ -188,4 +188,4 @@ Useful commands: `flask --app app:create_app seed` (load demo data into an empty
 
 See [docs/FIGMA_AUDIT.md](docs/FIGMA_AUDIT.md) for how each Figma frame maps to a page.
 
-Presenting this as a group? See [docs/ChariGo_Demo_Guide.pdf](docs/ChariGo_Demo_Guide.pdf): a four-person demonstration plan with who does what, what to click, what to say, and likely questions.
+Presenting this as a group? See [docs/ChariGo_Demo_Guide.pdf](docs/ChariGo_Demo_Guide.pdf): a 9-minute, four-person live walkthrough: who does what, what to click, and what to say.
