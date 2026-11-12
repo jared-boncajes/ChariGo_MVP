@@ -57,7 +57,10 @@
             <a class="action-row" href="{{ url_for('goer.edit_profile') }}">Edit profile <span>›</span></a>
             <form action="{{ url_for('auth.logout') }}"
                   method="post"
-                  data-confirm="Log out of ChariGo?">
+                  data-tone="danger"
+                  data-confirm-title="Log out?"
+                  data-confirm="You will need to log in again to use your account."
+                  data-confirm-label="Log out">
                 {{ csrf() }}
                 <button class="button secondary full">Log out</button>
             </form>

@@ -158,7 +158,7 @@ python -m pip install -r requirements-dev.txt
 python -m pytest -q
 ```
 
-32 tests cover sign-up and log-in, role and ownership restrictions, CSRF, the donation and volunteer flows, history filters / CSV export / withdrawal, organization and administrator workflows, uploads, caching and compression. Each test uses its own temporary database.
+33 tests cover sign-up and log-in, role and ownership restrictions, CSRF, the donation and volunteer flows, history filters / CSV export / withdrawal, organization and administrator workflows, uploads, caching and compression. Each test uses its own temporary database.
 
 ## Project structure
 

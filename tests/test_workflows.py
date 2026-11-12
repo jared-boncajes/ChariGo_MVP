@@ -900,3 +900,20 @@ def test_confirmations_are_popups_not_pages(client, app):
             db.select(SystemRecord).where(SystemRecord.action == "Approve organization").order_by(SystemRecord.id.desc())
         )
         assert "Documents checked." in record.description
+
+
+def test_logout_and_withdraw_popups_are_red(client):
+    login(client)
+    profile = client.get("/profile").get_data(as_text=True)
+    form = profile.split('action="/logout"')[1].split("</form>")[0]
+    assert 'data-tone="danger"' in form and 'data-confirm-label="Log out"' in form
+    post(client, "/logout")
+    login(client, "organization@example.com")
+    org = client.get("/organization").get_data(as_text=True)
+    form = org.split('action="/logout"')[1].split("</form>")[0]
+    assert 'data-tone="danger"' in form
+    post(client, "/logout")
+    login(client)
+    history = client.get("/history/volunteering?status=pending").get_data(as_text=True)
+    withdraw = history.split("/withdraw")[0].rsplit("<form", 1)[1]
+    assert 'data-tone="danger"' in withdraw and "data-confirm-again=" in withdraw
