@@ -1,6 +1,7 @@
-{% extends 'base.html' %}{% from 'components/ui.html' import heading,fundraiser_card,empty with context %}
+{% extends 'base.html' %}{% from 'components/ui.html' import heading,fundraiser_card,empty,verification_notice with context %}
 {% block content %}
     {{ heading(title) }}
+    {{ verification_notice(current_user.organization) }}
     <nav class="tabs" aria-label="Fundraiser history">
         <a href="{{ url_for('organization.fundraisers') }}"
            {% if not past %}aria-current="page"{% endif %}>Current Fundraisers</a><a href="{{ url_for('organization.fundraisers',status='past') }}"
@@ -13,7 +14,7 @@
         {% for f in campaigns %}
             {{ fundraiser_card(f,true) }}
         {% else %}
-            {{ empty('No past fundraisers' if past else 'No current fundraisers','Your campaigns will appear here after you create them.',url_for('organization.dashboard') ,'Organization overview') }}
+            {{ empty('No past fundraisers' if past else 'No current fundraisers','Your campaigns will appear here after you create them.',url_for('organization.dashboard') ,'Organization profile') }}
         {% endfor %}
     </div>
 {% endblock %}

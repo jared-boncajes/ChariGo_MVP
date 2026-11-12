@@ -20,7 +20,8 @@ bp = Blueprint("auth", __name__)
 def home_for(user):
     return {
         "charity_goer": "goer.home",
-        "charity_organization": "organization.dashboard",
+        # The Home tab of each role: Home, Current Fundraisers, Dashboard.
+        "charity_organization": "organization.fundraisers",
         "administrator": "admin.dashboard",
     }[user.role]
 

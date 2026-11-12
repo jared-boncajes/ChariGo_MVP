@@ -1127,6 +1127,7 @@ a.stat:hover {
 /* Links and small notes that follow a block must be blocks themselves: an inline
    element ignores the top margin the surrounding stack gives it. */
 .hero-impact > .text-link,
+.notice > a,
 .detail-grid > section > a,
 .card > a:not(.button),
 .admin-row > div > a,

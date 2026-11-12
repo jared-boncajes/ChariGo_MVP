@@ -34,7 +34,7 @@ python -m pip install -r requirements.txt
 python app.py
 ```
 
-Open <http://127.0.0.1:5000>. The first start creates the database in `instance/charigo.db` and loads the demo data automatically; later starts keep your data.
+Open <http://127.0.0.1:5000>. After logging in, every role lands on its Home: Charity Goers on Home, Organizations on Current Fundraisers, Administrators on the Dashboard. The first start creates the database in `instance/charigo.db` and loads the demo data automatically; later starts keep your data.
 
 `flask --app app run --debug` also works if you prefer the Flask CLI with auto-reload.
 
@@ -158,7 +158,7 @@ python -m pip install -r requirements-dev.txt
 python -m pytest -q
 ```
 
-29 tests cover sign-up and log-in, role and ownership restrictions, CSRF, the donation and volunteer flows, history filters / CSV export / withdrawal, organization and administrator workflows, uploads, caching and compression. Each test uses its own temporary database.
+31 tests cover sign-up and log-in, role and ownership restrictions, CSRF, the donation and volunteer flows, history filters / CSV export / withdrawal, organization and administrator workflows, uploads, caching and compression. Each test uses its own temporary database.
 
 ## Project structure
 

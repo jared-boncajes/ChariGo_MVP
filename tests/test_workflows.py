@@ -835,3 +835,25 @@ def test_admin_filters_keep_apply_and_reset_together(client):
         page = client.get(path).get_data(as_text=True)
         assert 'class="filter-form admin-filter"' in page
         assert 'class="button secondary" href="' + path + '">Reset</a>' in page
+
+
+def test_every_role_lands_on_its_home_after_login(client):
+    expected = {
+        "goer@example.com": "/home",
+        "organization@example.com": "/organization/fundraisers",
+        "admin@example.com": "/admin",
+    }
+    for email, home in expected.items():
+        landed = login(client, email)
+        assert landed.request.path == home, email
+        # Signed-in visits to the welcome and log-in pages lead to the same place.
+        for path in ["/", "/login"]:
+            assert client.get(path).headers["Location"].endswith(home), (email, path)
+        post(client, "/logout")
+
+
+def test_unapproved_organization_sees_its_status_on_home(client):
+    landed = login(client, "pending@example.com")
+    assert landed.request.path == "/organization/fundraisers"
+    page = landed.get_data(as_text=True)
+    assert "Please Wait!" in page and "Complete organization registration" in page

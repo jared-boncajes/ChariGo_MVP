@@ -110,3 +110,22 @@
         </div>
     {% endif %}
 {% endmacro %}
+{% macro verification_notice(org) %}
+    {% if org.verification_status != 'verified' %}
+        <section class="notice">
+            <h2>
+                {{ 'Please Wait!' if org.verification_status == 'pending' else 'Organization '+org.verification_status|title }}
+            </h2>
+            <p>
+                {% if org.verification_status == 'pending' %}
+                    Complete your organization profile and submit it for review. Your verification status will appear here. Creating fundraisers is available after administrator approval.
+                {% elif org.verification_status == 'rejected' %}
+                    Your registration needs changes. {{ org.rejection_reason }} Update your profile to resubmit for verification.
+                {% else %}
+                    This organization is inactive. Contact the administrator before posting campaigns.
+                {% endif %}
+            </p>
+            <a href="{{ url_for('organization.profile') }}">{{ 'Complete organization registration' if org.verification_status == 'pending' else 'Edit organization details' }} →</a>
+        </section>
+    {% endif %}
+{% endmacro %}
