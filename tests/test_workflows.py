@@ -733,3 +733,105 @@ def test_back_button_cannot_return_to_guest_pages_when_signed_in(client):
     post(client, "/logout")
     assert client.get_cookie("cg_signed_in") is None
     assert client.get("/login").status_code == 200
+
+
+def test_navigation_and_profile_entry_points(client):
+    login(client)
+    home = client.get("/home").get_data(as_text=True)
+    assert "Browse by category" not in home
+    assert "Categories" in client.get("/causes").get_data(as_text=True)
+    nav = home.split('aria-label="Main navigation"')[1].split("</nav>")[0]
+    assert "Profile" not in nav and "Explore" in nav
+    assert 'class="account-chip"' in home and 'href="/profile"' in home
+    post(client, "/logout")
+
+    login(client, "organization@example.com")
+    page = client.get("/organization")
+    text = page.get_data(as_text=True)
+    nav = text.split('aria-label="Organization navigation"')[1].split("</nav>")[0]
+    assert "Profile" not in nav and "Create" in nav
+    assert 'class="account-chip"' in text and 'href="/organization"' in text
+    # No My Account page for organizations: /profile leads to the organization profile.
+    assert client.get("/profile").headers["Location"].endswith("/organization")
+    for removed in ["Current Fundraisers", "Past Fundraisers", "Create Fundraiser", "My Account"]:
+        assert removed not in text, removed
+    for present in ["Donations Received", "Edit Organization", "Edit Profile", "Log out"]:
+        assert present in text, present
+    lists = client.get("/organization/fundraisers").get_data(as_text=True)
+    assert 'class="back"' not in lists and "Create Fundraiser" not in lists
+    past = client.get("/organization/fundraisers?status=past").get_data(as_text=True)
+    assert 'class="back"' not in past and "Create Fundraiser" not in past
+    edit = client.get("/profile/edit").get_data(as_text=True)
+    assert 'href="/organization"' in edit
+
+
+def test_review_buttons_use_standard_wording(client):
+    login(client)
+    post(client, "/fundraisers/1/donate", {"amount": "250", "method": "GCash"})
+    review = client.get("/donation/review").get_data(as_text=True)
+    assert "Edit / Cancel" not in review
+    assert ">Cancel</a>" in review and "Confirm Donation" in review
+
+
+def test_past_campaigns_are_viewable_but_not_donatable(client, app):
+    login(client)
+    page = client.get("/organizations/1?tab=campaigns").get_data(as_text=True)
+    assert "Past campaigns" in page and "Community Feeding Drive" in page
+    with app.app_context():
+        past = db.session.scalar(
+            db.select(Fundraiser).where(Fundraiser.title == "Community Feeding Drive")
+        )
+        past_id = past.id
+    detail = client.get(f"/fundraisers/{past_id}").get_data(as_text=True)
+    assert "This campaign has ended" in detail
+    assert "/donate" not in detail and "Volunteer</a>" not in detail
+    assert client.get(f"/fundraisers/{past_id}/donate").status_code == 409
+
+
+def test_donating_from_an_organization_page_offers_its_active_campaigns(client, app):
+    login(client)
+    assert 'href="/organizations/1/donate"' in client.get("/organizations/1").get_data(as_text=True)
+    chooser = client.get("/organizations/1/donate").get_data(as_text=True)
+    assert "Choose a campaign" in chooser
+    assert "Community Feeding Drive" not in chooser  # only current campaigns
+    for title in ["Bawat Batang Pinoy Malusog", "Learning Kits, Brighter Futures"]:
+        assert title in chooser
+    assert 'href="/fundraisers/1/donate"' in chooser
+    with app.app_context():
+        for f in db.session.scalars(
+            db.select(Fundraiser).where(
+                Fundraiser.organization_id == 1, Fundraiser.id != 1
+            )
+        ):
+            f.status = "inactive"
+        db.session.commit()
+    # With only one campaign left there is nothing to choose: go straight to it.
+    assert client.get("/organizations/1/donate").headers["Location"].endswith("/fundraisers/1/donate")
+
+
+def test_costly_actions_are_red_and_ask_again(client):
+    login(client, "admin@example.com")
+    risky = client.get("/admin/actions/user/2/deactivate").get_data(as_text=True)
+    assert 'data-tone="danger"' in risky and 'class="button danger"' in risky
+    safe = client.get("/admin/actions/organization/3/approve").get_data(as_text=True)
+    assert 'data-tone="danger"' not in safe
+    detail = client.get("/admin/organizations/3").get_data(as_text=True)
+    assert 'class="button danger"' in detail  # Reject Organization
+    post(client, "/logout")
+    login(client, "organization@example.com")
+    decline = client.get("/organization/applications/5/reject").get_data(as_text=True)
+    assert 'data-tone="danger"' in decline
+    close = client.get("/organization/fundraisers/1/deactivate").get_data(as_text=True)
+    assert 'data-tone="danger"' in close
+    post(client, "/logout")
+    login(client)
+    history = client.get("/history/volunteering?status=pending").get_data(as_text=True)
+    assert "data-confirm-again=" in history and 'class="button danger small"' in history
+
+
+def test_admin_filters_keep_apply_and_reset_together(client):
+    login(client, "admin@example.com")
+    for path in ["/admin/users", "/admin/organizations", "/admin/opportunities"]:
+        page = client.get(path).get_data(as_text=True)
+        assert 'class="filter-form admin-filter"' in page
+        assert 'class="button secondary" href="' + path + '">Reset</a>' in page

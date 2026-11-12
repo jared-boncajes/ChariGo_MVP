@@ -85,7 +85,13 @@
                     {% endif %}
                     <p class="fine-print">This is a demo. All donations use simulated payments.</p>
                 {% else %}
-                    <div class="notice">This fundraiser is currently closed. Thank you for supporting this community.</div>
+                    <div class="notice">
+                        {% if fundraiser.display_status == 'completed' %}
+                            This campaign has ended. Thank you to everyone who supported it.
+                        {% else %}
+                            This fundraiser is currently closed. Thank you for supporting this community.
+                        {% endif %}
+                    </div>
                     <a class="button secondary" href="{{ url_for('goer.causes') }}">Explore other causes</a>
                 {% endif %}
             </section>

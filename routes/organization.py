@@ -356,6 +356,8 @@ def campaign_action(fid, action):
         explanation="This campaign will stop accepting donations and volunteers. All historical records are preserved.",
         cancel_url=url_for("organization.manage", fid=f.id),
         button="Confirm",
+        danger=True,
+        final_label="Yes, deactivate" if action == "deactivate" else "Yes, mark completed",
         active="home",
     )
 
@@ -435,5 +437,7 @@ def decide(aid, decision):
         explanation="The applicant will see this decision in their volunteer history.",
         cancel_url=url_for("organization.applicant", aid=aid),
         button="Confirm decision",
+        danger=decision == "reject",
+        final_label="Yes, decline",
         active="home",
     )

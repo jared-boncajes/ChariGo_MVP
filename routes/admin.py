@@ -298,6 +298,8 @@ def action(kind, oid, action):
         explanation="This change updates access or public visibility. The record and its history will be preserved, and this action will be audited.",
         cancel_url=cancel_url,
         button="Confirm " + action,
+        danger=action in {"deactivate", "remove", "reject"},
+        final_label="Yes, " + action,
         ask_reason=True,
         active="admin",
     )

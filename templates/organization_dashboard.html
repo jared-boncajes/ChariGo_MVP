@@ -1,4 +1,4 @@
-{% extends 'base.html' %}{% from 'components/ui.html' import avatar,badge with context %}
+{% extends 'base.html' %}{% from 'components/ui.html' import avatar,badge,csrf with context %}
 {% block content %}
     <div class="narrow-wide">
         <section class="profile-heading">
@@ -37,15 +37,16 @@
         </div>
         <div class="two-columns">
             <section>
-                <h2>Fundraiser Management</h2>
+                <h2>Organization Management</h2>
                 <div class="stack">
-                    <a class="action-row" href="{{ url_for('organization.fundraisers') }}">Current Fundraisers <span>›</span></a><a class="action-row"
-   href="{{ url_for('organization.fundraisers',status='past') }}">Past Fundraisers <span>›</span></a>
-                    {% if org.public %}
-                        <a class="action-row"
-                           href="{{ url_for('organization.edit_fundraiser') }}">Create Fundraiser <span>›</span></a>
-                    {% endif %}
-                    <a class="action-row" href="{{ url_for('organization.donations') }}">Donations Received <span>›</span></a><a class="action-row" href="{{ url_for('organization.profile') }}">Edit Organization <span>›</span></a><a class="action-row" href="{{ url_for('goer.profile') }}">My Account / Log out <span>›</span></a>
+                    <a class="action-row" href="{{ url_for('organization.donations') }}">Donations Received <span>›</span></a><a class="action-row" href="{{ url_for('organization.profile') }}">Edit Organization <span>›</span></a><a class="action-row" href="{{ url_for('goer.edit_profile') }}">Edit Profile <span>›</span></a>
+                    <form action="{{ url_for('auth.logout') }}"
+                          method="post"
+                          data-confirm="Log out of ChariGo?"
+                          data-confirm-label="Log out">
+                        {{ csrf() }}
+                        <button class="button secondary full">Log out</button>
+                    </form>
                 </div>
             </section>
             <section class="card">

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}{% from 'components/ui.html' import heading,fundraiser_card,empty with context %}
 {% block content %}
-    {{ heading(title,url_for('organization.dashboard') ) }}
+    {{ heading(title) }}
     <nav class="tabs" aria-label="Fundraiser history">
         <a href="{{ url_for('organization.fundraisers') }}"
            {% if not past %}aria-current="page"{% endif %}>Current Fundraisers</a><a href="{{ url_for('organization.fundraisers',status='past') }}"
@@ -8,10 +8,6 @@
     </nav>
     <div class="section-heading">
         <h2>{{ 'Fundraising history' if past else 'Your fundraisers' }}</h2>
-        {% if current_user.organization.public %}
-            <a class="button small"
-               href="{{ url_for('organization.edit_fundraiser') }}">Create Fundraiser</a>
-        {% endif %}
     </div>
     <div class="campaign-grid">
         {% for f in campaigns %}

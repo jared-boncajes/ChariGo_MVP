@@ -5,13 +5,14 @@
         <section class="card confirmation">
             <h2>{{ target }}</h2>
             <p>{{ explanation }}</p>
-            <form method="post">
+            <form method="post"
+                  {% if danger %}data-tone="danger" data-confirm-title="Last check" data-confirm="This is applied right away and may be hard to undo. Do you want to continue?" data-confirm-label="{{ final_label|default('Yes, continue') }}"{% endif %}>
                 {{ csrf() }}
                 <input type="hidden" name="confirm" value="yes">
                 {% if ask_reason %}{{ textarea('reason','Reason',required=false,maxlength=750) }}{% endif %}
                 <div class="actions">
                     <a class="button secondary" href="{{ cancel_url }}">Cancel</a>
-                    <button class="button" data-processing="Saving…">{{ button }}</button>
+                    <button class="button {{ 'danger' if danger else '' }}" data-processing="Saving…">{{ button }}</button>
                 </div>
             </form>
         </section>

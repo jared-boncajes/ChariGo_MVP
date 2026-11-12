@@ -139,6 +139,18 @@ def organization(oid):
     ):
         abort(404)
     campaigns = [f for f in org.fundraisers if f.accepting]
+    # Finished campaigns stay viewable (details only, nothing to donate to).
+    past = sorted(
+        [
+            f
+            for f in org.fundraisers
+            if f.public
+            and not f.accepting
+            and (f.status == "completed" or f.end_date < date.today())
+        ],
+        key=lambda f: f.end_date,
+        reverse=True,
+    )
     saved = g.user and db.session.scalar(
         db.select(SavedCharity).where(
             SavedCharity.user_id == g.user.id, SavedCharity.organization_id == oid
@@ -152,8 +164,34 @@ def organization(oid):
         title=org.name,
         org=org,
         campaigns=campaigns,
+        past=past,
         saved=saved,
         tab=tab,
+        active="explore",
+    )
+
+
+@bp.route("/organizations/<int:oid>/donate")
+def choose_campaign(oid):
+    """Pick which of an organization's current campaigns to support."""
+    org = db.get_or_404(Organization, oid)
+    if not org.public:
+        abort(404)
+    campaigns = sorted(
+        [f for f in org.fundraisers if f.accepting], key=lambda f: f.end_date
+    )
+    can_donate = not g.user or g.user.role == "charity_goer"
+    if not campaigns:
+        flash("This organization has no active campaigns right now.", "error")
+        return redirect(url_for("goer.organization", oid=oid, tab="campaigns"))
+    if len(campaigns) == 1 and can_donate:
+        return redirect(url_for("goer.donate", fid=campaigns[0].id))
+    return render_template(
+        "choose_campaign.html",
+        title="Choose a campaign",
+        org=org,
+        campaigns=campaigns,
+        can_donate=can_donate,
         active="explore",
     )
 
@@ -613,6 +651,9 @@ def withdraw_application(aid):
 @bp.route("/profile")
 @require_role()
 def profile():
+    if g.user.role == "charity_organization":
+        # Organizations have a single profile page: their organization profile.
+        return redirect(url_for("organization.dashboard"))
     recent = []
     if g.user.role == "charity_goer":
         recent = sorted(

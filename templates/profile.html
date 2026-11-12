@@ -49,8 +49,6 @@
                     <p class="muted">Save a charity from its profile to find it here.</p>
                 {% endfor %}
             </div>
-        {% elif current_user.role == 'charity_organization' %}
-            <a class="action-row" href="{{ url_for('organization.dashboard') }}">Organization profile <span>›</span></a>
         {% else %}
             <a class="action-row" href="{{ url_for('admin.dashboard') }}">Administrator Dashboard <span>›</span></a>
         {% endif %}

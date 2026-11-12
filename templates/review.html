@@ -55,7 +55,7 @@
             <input type="hidden" name="review_token" value="{{ pending.token }}">
             <div class="actions">
                 <a class="button secondary"
-                   href="{{ url_for('goer.donate',fid=fundraiser.id) if kind == 'donation' else url_for('goer.opportunity',oid=opportunity.id) }}">Edit / Cancel</a>
+                   href="{{ url_for('goer.fundraiser',fid=fundraiser.id) if kind == 'donation' else url_for('goer.opportunity',oid=opportunity.id) }}">Cancel</a>
                 <button class="button"
                         data-processing="{{ 'Processing donation…' if kind == 'donation' else 'Submitting application…' }}">
                     {{ 'Confirm Donation' if kind == 'donation' else 'Confirm Application' }}

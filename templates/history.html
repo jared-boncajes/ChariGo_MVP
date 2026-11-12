@@ -149,10 +149,13 @@
                                     {% if item.status == 'pending' %}
                                         <form method="post"
                                               action="{{ url_for('goer.withdraw_application',aid=item.id) }}"
+                                              data-tone="danger"
+                                              data-confirm-title="Withdraw application?"
                                               data-confirm="Withdraw your application for {{ item.opportunity.title }}? You can apply again while the opportunity is open."
-                                              data-confirm-label="Withdraw">
+                                              data-confirm-label="Withdraw"
+                                              data-confirm-again="This removes your application right now. Do you really want to withdraw it?">
                                             {{ csrf() }}
-                                            <button class="button secondary small" data-processing="Withdrawing…">Withdraw</button>
+                                            <button class="button danger small" data-processing="Withdrawing…">Withdraw</button>
                                         </form>
                                     {% endif %}
                                 </div>

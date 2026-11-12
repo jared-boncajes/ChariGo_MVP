@@ -1,0 +1,34 @@
+{% extends 'base.html' %}{% from 'components/ui.html' import heading,progress,badge with context %}
+{% block content %}
+    <div class="narrow-wide">
+        {{ heading('Choose a campaign',url_for('goer.organization',oid=org.id,tab='campaigns') ) }}
+        <p class="muted">
+            {{ org.name }} has {{ campaigns|length }} active campaigns. Pick the one you would like to support.
+        </p>
+        {% if not can_donate %}
+            <p class="notice">Use a Charity Goer account to donate. You can still read about each campaign.</p>
+        {% endif %}
+        <div class="stack">
+            {% for f in campaigns %}
+                <article class="card choice-campaign">
+                    <img src="{{ image_url(f.cover_image) }}"
+                         alt=""
+                         loading="lazy"
+                         width="96"
+                         height="96">
+                    <div class="choice-body">
+                        <h2>{{ f.title }}</h2>
+                        <p class="muted">{{ f.category }} · {{ f.location }}</p>
+                        {{ progress(f) }}
+                    </div>
+                    <div class="choice-action">
+                        {% if can_donate %}
+                            <a class="button" href="{{ url_for('goer.donate',fid=f.id) }}">Donate</a>
+                        {% endif %}
+                        <a class="button secondary" href="{{ url_for('goer.fundraiser',fid=f.id) }}">Details</a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

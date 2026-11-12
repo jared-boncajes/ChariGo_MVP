@@ -95,7 +95,7 @@
                     <a class="button"
                        href="{{ url_for('admin.action',kind=kind,oid=item.id,action='approve') }}">Approve Organization</a>
                     {% if item.verification_status == 'pending' %}
-                        <a class="button secondary"
+                        <a class="button danger"
                            href="{{ url_for('admin.action',kind=kind,oid=item.id,action='reject') }}">Reject Organization</a>
                     {% endif %}
                 {% elif item.verification_status == 'verified' %}
@@ -164,7 +164,7 @@
                 {% set status = item.moderation_status if kind == 'fundraiser' else item.status %}
                 {% if status == 'active' %}
                     <a class="button danger"
-                       href="{{ url_for('admin.action',kind=kind,oid=item.id,action='deactivate') }}">Deactivate Opportunity</a><a class="button secondary"
+                       href="{{ url_for('admin.action',kind=kind,oid=item.id,action='deactivate') }}">Deactivate Opportunity</a><a class="button danger"
    href="{{ url_for('admin.action',kind=kind,oid=item.id,action='remove') }}">Remove from listings</a>
                 {% else %}
                     <a class="button"

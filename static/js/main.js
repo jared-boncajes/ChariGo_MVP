@@ -49,24 +49,45 @@ document.querySelectorAll("[data-fill-email]").forEach((button) => {
 const confirmDialog = document.getElementById("confirm-dialog");
 let awaitingForm = null;
 let previouslyFocused = null;
+let secondStep = false;
+// Costly actions can ask twice: data-confirm-again holds the second question.
+function showConfirmation(form, again) {
+  const label = form.dataset.confirmLabel || "Confirm";
+  confirmDialog.dataset.tone = form.dataset.tone || "";
+  document.getElementById("dialog-title").textContent = again
+    ? "Last check"
+    : form.dataset.confirmTitle || "Are you sure?";
+  document.getElementById("dialog-message").textContent = again
+    ? form.dataset.confirmAgain
+    : form.dataset.confirm;
+  document.getElementById("dialog-confirm").textContent = again
+    ? "Yes, " + label.replace(/^Yes, /, "").toLowerCase()
+    : label;
+  if (!confirmDialog.open) confirmDialog.showModal();
+  document.getElementById("dialog-cancel").focus();
+}
 function closeConfirmation() {
   confirmDialog.close();
   if (previouslyFocused) previouslyFocused.focus();
-  awaitingForm = null;
 }
 document
   .getElementById("dialog-cancel")
   .addEventListener("click", closeConfirmation);
-confirmDialog.addEventListener("cancel", () => {
+confirmDialog.addEventListener("close", () => {
   awaitingForm = null;
+  secondStep = false;
 });
 document.getElementById("dialog-confirm").addEventListener("click", () => {
   const form = awaitingForm;
-  confirmDialog.close();
-  if (form) {
-    form.dataset.confirmed = "yes";
-    form.requestSubmit();
+  if (!form) return;
+  if (form.dataset.confirmAgain && !secondStep) {
+    secondStep = true;
+    showConfirmation(form, true);
+    return;
   }
+  confirmDialog.close();
+  form.dataset.confirmed = "yes";
+  form.requestSubmit();
 });
 document.querySelectorAll("form").forEach((form) => {
   form.addEventListener("submit", (event) => {
@@ -88,12 +109,7 @@ document.querySelectorAll("form").forEach((form) => {
       event.preventDefault();
       awaitingForm = form;
       previouslyFocused = document.activeElement;
-      document.getElementById("dialog-message").textContent =
-        form.dataset.confirm;
-      document.getElementById("dialog-confirm").textContent =
-        form.dataset.confirmLabel || "Confirm";
-      confirmDialog.showModal();
-      document.getElementById("dialog-cancel").focus();
+      showConfirmation(form, false);
       return;
     }
     if ((form.getAttribute("method") || "get").toLowerCase() === "post") {

@@ -2,15 +2,16 @@
 {% block content %}
     <div class="narrow-wide cover-page">
         {{ heading('Organization',url_for('goer.causes') ) }}
-        <img class="organization-banner cover-bleed"
-             src="{{ image_url(org.banner) }}"
-             alt="{{ org.name }} community">
-        <section class="organization-identity card">
-            {{ avatar(org) }}
-            <div>
-                <h1>{{ org.name }}</h1>
-                {{ badge(org.verification_status) }}
-                <p>{{ org.location }}</p>
+        <section class="org-hero">
+            <img src="{{ image_url(org.banner) }}"
+                 alt="{{ org.name }} community volunteers">
+            <div class="org-hero-copy">
+                {{ avatar(org) }}
+                <div>
+                    <h2>{{ org.name }}</h2>
+                    {{ badge(org.verification_status) }}
+                    <p>{{ org.location }}</p>
+                </div>
             </div>
         </section>
         <nav class="tabs" aria-label="Organization sections">
@@ -31,13 +32,23 @@
                 </section>
             </div>
         {% elif tab == 'campaigns' %}
+            <h2>Current campaigns</h2>
             <div class="campaign-grid">
                 {% for f in campaigns %}
                     {{ fundraiser_card(f) }}
                 {% else %}
-                    {{ empty('No active campaigns', 'This organization has no open campaigns right now.') }}
+                    {{ empty('No active campaigns', 'This organization has no open campaigns right now.', '', '') }}
                 {% endfor %}
             </div>
+            {% if past %}
+                <h2>Past campaigns</h2>
+                <p class="muted">These campaigns have ended. You can read the details but cannot donate or volunteer.</p>
+                <div class="campaign-grid past-campaigns">
+                    {% for f in past %}
+                        {{ fundraiser_card(f) }}
+                    {% endfor %}
+                </div>
+            {% endif %}
         {% else %}
             <section class="card">
                 <h2>Contact</h2>
@@ -62,9 +73,8 @@
             </section>
         {% endif %}
         <div class="actions">
-            {% if campaigns %}
-                <a class="button"
-                   href="{{ url_for('goer.fundraiser',fid=campaigns[0].id) }}">Donate Now</a>
+            {% if campaigns and (not current_user or current_user.role == 'charity_goer') %}
+                <a class="button" href="{{ url_for('goer.choose_campaign',oid=org.id) }}">Donate Now</a>
             {% endif %}
             {% if current_user and current_user.role == 'charity_goer' %}
                 <form method="post"

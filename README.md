@@ -80,7 +80,8 @@ flask --app app restore-demo
 2. **Home** shows your impact, categories and featured fundraisers. **Explore** searches and filters by category, organization and volunteer need — filters apply as soon as you change them.
 3. Open a fundraiser → **Donate** → pick an amount and a mock payment method → review → confirm. You get a receipt with a reference number. No money moves; payments are simulated.
 4. On a fundraiser with a volunteer opportunity → **Volunteer** → write a short message → review → submit.
-5. **Profile → Donation history / Volunteer history** (see below).
+5. Click your **name or photo at the top right** to open your profile, then **Donation history / Volunteer history** (see below). There is no Profile tab; the top-right account button is the one way in.
+6. On an organization's page, **Campaigns** shows its current and past campaigns (past ones are read-only), and **Donate Now** lets you choose which current campaign to support.
 
 **History**
 
@@ -88,7 +89,7 @@ flask --app app restore-demo
 - *Volunteering*: every application with its live status (pending, accepted, rejected), a plain-language explanation of what the status means, the event date, and your message. Filter by status and period. A pending application can be **withdrawn** (with confirmation).
 - **Download CSV** exports exactly what is currently shown.
 - The profile page shows your three most recent activities; the home page links straight to history.
-- Organizations get **Profile → Donations Received**: every donation to their fundraisers, filterable by fundraiser, with anonymous donors kept anonymous.
+- Organizations get **Donations Received** on their profile page (top-right account button): every donation to their fundraisers, filterable by fundraiser, with anonymous donors kept anonymous.
 
 **Organization**: sign up as an organization → complete the organization profile → wait for administrator approval → create fundraisers (optionally with a volunteer opportunity) → review applicants and accept or decline → mark campaigns completed or deactivate them. History is always preserved.
 
@@ -128,9 +129,9 @@ Things to know before sharing a public link:
 |---|---|
 | Visibility of system status | Loading bar on every navigation, buttons switch to "Saving…" while a form submits, status badges on every fundraiser and application, live result counts on filtered lists, progress bars from real donation totals |
 | Match with the real world | Peso amounts, Philippine time, plain status notes ("The organization is reviewing your application") instead of codes |
-| User control and freedom | Back button on every inner page, review step before donating or applying, Edit / Cancel on reviews, withdraw a pending application, Clear filters, dismissible messages |
+| User control and freedom | Back button on every inner page, review step before donating or applying (back arrow to edit, Cancel to leave), withdraw a pending application, Clear filters, dismissible messages |
 | Consistency and standards | One set of tokens and components (buttons, cards, badges, tabs, stat tiles) across all three roles; navigation always in the same place for the device |
-| Error prevention | Confirmation dialogs for withdraw, log out and every destructive admin/organization action; amount presets; duplicate-submission protection; file size checked before upload |
+| Error prevention | Confirmation dialogs; costly actions (withdraw, deactivate, decline, reject, remove) are solid red and ask twice; amount presets; duplicate-submission protection; file size checked before upload |
 | Recognition rather than recall | Icons with text labels, category tiles, demo-account buttons, receipts and references listed in history, "Donate again" |
 | Flexibility and efficiency | Filters auto-apply, search from the home page, CSV export, impact tiles link to history |
 | Aesthetic and minimalist design | Figma palette with generous spacing, one primary action per screen, secondary detail tucked behind disclosure |
@@ -157,7 +158,7 @@ python -m pip install -r requirements-dev.txt
 python -m pytest -q
 ```
 
-22 tests cover sign-up and log-in, role and ownership restrictions, CSRF, the donation and volunteer flows, history filters / CSV export / withdrawal, organization and administrator workflows, uploads, caching and compression. Each test uses its own temporary database.
+29 tests cover sign-up and log-in, role and ownership restrictions, CSRF, the donation and volunteer flows, history filters / CSV export / withdrawal, organization and administrator workflows, uploads, caching and compression. Each test uses its own temporary database.
 
 ## Project structure
 

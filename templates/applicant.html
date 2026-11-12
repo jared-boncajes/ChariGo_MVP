@@ -48,7 +48,7 @@
         {% if application.status == 'pending' %}
             <div class="actions">
                 <a class="button"
-                   href="{{ url_for('organization.decide',aid=application.id,decision='accept') }}">Accept</a><a class="button secondary"
+                   href="{{ url_for('organization.decide',aid=application.id,decision='accept') }}">Accept</a><a class="button danger"
    href="{{ url_for('organization.decide',aid=application.id,decision='reject') }}">Decline</a>
             </div>
         {% else %}

@@ -28,21 +28,6 @@
             </aside>
         {% endif %}
     </section>
-    <section class="home-categories" aria-labelledby="browse-heading">
-        <div class="section-heading">
-            <h2 id="browse-heading">Browse by category</h2>
-        </div>
-        <div class="categories">
-            {% for label,icon in categories.items() %}
-                <a class="category" href="{{ url_for('goer.causes',category=label) }}">
-                    <img src="{{ url_for('static',filename='icons/'+icon+'.svg') }}"
-                         alt=""
-                         width="56"
-                         height="56">
-                    <span>{{ label }}</span></a>
-            {% endfor %}
-        </div>
-    </section>
     {% if organizations %}
         <section>
             <div class="section-heading">

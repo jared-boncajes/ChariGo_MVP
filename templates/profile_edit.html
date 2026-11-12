@@ -1,14 +1,14 @@
 {% extends 'base.html' %}{% from 'components/ui.html' import heading,field,textarea,csrf,upload with context %}
 {% block content %}
     <div class="narrow">
-        {{ heading('Edit Profile',url_for('goer.profile') ) }}
+        {{ heading('Edit Profile',url_for('organization.dashboard' if current_user.role == 'charity_organization' else 'goer.profile') ) }}
         <form method="post" enctype="multipart/form-data">
             {{ csrf() }}{{ upload('image', 'Profile photo') }}{{ field('name','Full name',current_user.name,maxlength=100) }}{{ field('email','Email address',current_user.email,type='email',maxlength=254) }}{{ field('phone','Phone',current_user.phone,required=false,type='tel',maxlength=40) }}{{ field('location','Location',current_user.location,required=false) }}
             {% if current_user.role == 'charity_goer' %}
                 {{ field('availability','Availability',current_user.availability,required=false) }}{{ textarea('skills','Skills',current_user.skills,required=false,maxlength=2000) }}{{ textarea('experience','Volunteer experience',current_user.experience,required=false,maxlength=2000) }}
             {% endif %}
             <div class="actions">
-                <a class="button secondary" href="{{ url_for('goer.profile') }}">Cancel</a>
+                <a class="button secondary" href="{{ url_for('organization.dashboard' if current_user.role == 'charity_organization' else 'goer.profile') }}">Cancel</a>
                 <button class="button">Save Profile</button>
             </div>
         </form>

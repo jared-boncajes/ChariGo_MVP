@@ -38,7 +38,7 @@
                         </nav>
                     {% elif role == 'charity_organization' %}
                         <nav class="main-nav" aria-label="Organization navigation">
-                            {% for endpoint,label,icon,key in [('organization.fundraisers','Home','home','home'),('organization.edit_fundraiser','Create','plus','create'),('organization.dashboard','Profile','profile','profile')] %}
+                            {% for endpoint,label,icon,key in [('organization.fundraisers','Home','home','home'),('organization.edit_fundraiser','Create','plus','create')] %}
                                 <a href="{{ url_for(endpoint) }}"
                                    {% if active == key %}aria-current="page"{% endif %}>
                                     <span class="icon icon-{{ icon }}" aria-hidden="true"></span>
@@ -47,7 +47,7 @@
                         </nav>
                     {% else %}
                         <nav class="main-nav" aria-label="Main navigation">
-                            {% for endpoint,label,icon,key in [('goer.home','Home','home','home'),('goer.causes','Explore','explore','explore'),('goer.profile','Profile','profile','profile')] %}
+                            {% for endpoint,label,icon,key in [('goer.home','Home','home','home'),('goer.causes','Explore','explore','explore')] %}
                                 <a href="{{ url_for(endpoint) }}"
                                    {% if active == key %}aria-current="page"{% endif %}>
                                     <span class="icon icon-{{ icon }}" aria-hidden="true"></span>
@@ -58,8 +58,9 @@
                     <div class="header-actions">
                         {% if current_user %}
                             <a class="account-chip"
-                               href="{{ url_for('goer.profile') }}"
-                               aria-label="My account: {{ current_user.name }}">
+                               href="{{ url_for('organization.dashboard' if role == 'charity_organization' else 'goer.profile') }}"
+                               {% if active == 'profile' %}aria-current="page"{% endif %}
+                               aria-label="My profile: {{ current_user.name }}">
                                 {{ avatar(current_user) }}
                                 <span class="account-text"><strong>{{ current_user.name }}</strong><span class="role-label">{{ {'charity_goer':'Charity Goer','charity_organization':'Organization','administrator':'Administrator'}[current_user.role] }}</span></span>
                             </a>
@@ -94,6 +95,7 @@
             </footer>
         {% endif %}
         <dialog id="confirm-dialog" aria-labelledby="dialog-title">
+            <span class="dialog-icon" aria-hidden="true">!</span>
             <h2 id="dialog-title">Are you sure?</h2>
             <p id="dialog-message"></p>
             <div class="actions">
