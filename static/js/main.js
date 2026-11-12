@@ -123,6 +123,19 @@ document.querySelectorAll("form").forEach((form) => {
       });
     });
 });
+// Back/Forward can restore a page built for a different sign-in state (the
+// log-in page after signing in, or private pages after logging out). When the
+// state no longer matches, load the page again so the server decides what to show.
+function signedInNow() {
+  return document.cookie.split("; ").includes("cg_signed_in=1");
+}
+function matchSignInState() {
+  const rendered = document.body.dataset.signedIn === "1";
+  if (rendered !== signedInNow()) {
+    location.replace(location.pathname + location.search);
+  }
+}
+window.addEventListener("pageshow", matchSignInState);
 window.addEventListener("pageshow", () => {
   document.documentElement.classList.remove("is-loading");
   document.querySelectorAll("form[data-submitting]").forEach((form) => {

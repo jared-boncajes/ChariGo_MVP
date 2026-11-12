@@ -1101,6 +1101,7 @@ a.stat:hover {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: 35% center;
   transition: transform 500ms cubic-bezier(0.2, 0, 0, 1);
 }
 .foundation-banner:hover {
@@ -1300,6 +1301,7 @@ progress::-moz-progress-bar {
 }
 .organization-banner {
   aspect-ratio: 16 / 6;
+  object-position: 35% center;
 }
 /* Phones: the photo runs edge to edge under the back button, as in Figma. */
 .cover-page {

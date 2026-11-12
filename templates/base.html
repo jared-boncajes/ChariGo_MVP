@@ -19,7 +19,8 @@
         <script src="{{ url_for('static',filename='js/main.js') }}" defer></script>
     </head>
     {% set role = current_user.role if current_user else 'guest' %}
-    <body class="{{ 'auth-body' if auth_page else 'app-body role-' + role }}">
+    <body class="{{ 'auth-body' if auth_page else 'app-body role-' + role }}"
+          data-signed-in="{{ '1' if current_user else '0' }}">
         <a class="skip" href="#main">Skip to content</a>
         <div class="page-progress" aria-hidden="true"></div>
         {% if not auth_page %}

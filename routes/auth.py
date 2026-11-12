@@ -74,6 +74,8 @@ def login():
 
 @bp.route("/register/role")
 def choose_role():
+    if g.user:
+        return redirect(url_for(home_for(g.user)))
     return render_template("role.html", title="Choose your role")
 
 

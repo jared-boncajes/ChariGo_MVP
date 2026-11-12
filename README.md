@@ -141,7 +141,8 @@ Responsive behaviour: mobile-first CSS with breakpoints at 640px (two-column gri
 
 ## What makes it run smoothly
 
-- Photos are served as WebP copies (about 300 KB in total instead of 3 MB); originals stay in `static/images/`.
+- Photos are served as WebP copies (under 1 MB in total instead of 3 MB); originals stay in `static/images/`. The Figma photos are only 300-512 px wide, so small ones are enlarged with light sharpening, stray watermarks are cropped, and the Angat Buhay banner is a brand-colour composite so its photo is not stretched across a wide screen. To use sharper photos, drop a higher-resolution file into `static/images/` under the same name and run `python scripts/optimize_images.py`.
+- After signing in, the browser's Back button no longer returns to the log-in or sign-up pages; they are available again once you log out.
 - Static files are versioned and cached for a year; pages are gzip-compressed.
 - Cross-page transitions use the browser's View Transitions where supported, and respect "reduce motion".
 - No external requests: fonts, icons and scripts are all served locally.

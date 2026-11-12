@@ -111,8 +111,23 @@ def create_app(test_config=None):
         )
         if request.endpoint in {"static", "uploaded_image"}:
             return response
-        if g.get("user") or request.endpoint in {"auth.login", "auth.register"}:
+        # Pages that depend on who is signed in must never be replayed from the
+        # browser's cache (that is how Back used to reach the log-in page).
+        guest_only = {"goer.welcome", "auth.login", "auth.register", "auth.choose_role"}
+        if g.get("user") or request.endpoint in guest_only:
             response.headers["Cache-Control"] = "no-store"
+        # A plain marker the page script compares with what the page was built
+        # for, to catch copies restored by Back/Forward. It holds no secret.
+        signed_in = bool(session.get("user_id"))
+        if signed_in and request.cookies.get("cg_signed_in") != "1":
+            response.set_cookie(
+                "cg_signed_in",
+                "1",
+                samesite="Lax",
+                secure=app.config["SESSION_COOKIE_SECURE"],
+            )
+        elif not signed_in and "cg_signed_in" in request.cookies:
+            response.delete_cookie("cg_signed_in")
         # Compress pages: a large saving on slow mobile connections.
         if (
             "gzip" in request.headers.get("Accept-Encoding", "")

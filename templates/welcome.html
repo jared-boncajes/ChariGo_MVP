@@ -2,7 +2,7 @@
 {% block content %}
     <div class="welcome-layout">
         <div class="photo-collage" aria-label="Communities supported by ChariGo">
-            {% for image,alt in [('health.png','Community health outreach'),('environment.png','Young people planting a tree'),('water.png','Children washing their hands'),('animals.png','Care for rescued animals'),('education.png','Children learning together'),('hunger.png','Support for children facing hunger'),('relief.png','Community disaster response'),('angat-buhay.jpg','Angat Buhay community volunteers'),('community.png','Community outreach')] %}
+            {% for image,alt in [('health.png','Community health outreach'),('environment.png','Young people planting a tree'),('water.png','Children washing their hands'),('animals.png','Care for rescued animals'),('education.png','Children learning together'),('hunger.png','Support for children facing hunger'),('relief.png','Community disaster response'),('children.png','A child laughing at a community event'),('community.png','Community outreach')] %}
                 <img src="{{ image_url(image) }}" alt="{{ alt }}">
             {% endfor %}
         </div>

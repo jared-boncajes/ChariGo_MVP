@@ -715,3 +715,21 @@ def test_login_messages_and_demo_account_repair(client, app):
     assert "Demo accounts are ready" in result.output
     assert login(client).status_code == 200
     assert client.get("/profile").status_code == 200
+
+
+def test_back_button_cannot_return_to_guest_pages_when_signed_in(client):
+    for path in ["/", "/login", "/register", "/register/role"]:
+        page = client.get(path)
+        assert page.headers["Cache-Control"] == "no-store", path
+        assert b'data-signed-in="0"' in page.data
+    signed_in = login(client)
+    assert b'data-signed-in="1"' in signed_in.data
+    assert client.get_cookie("cg_signed_in").value == "1"
+    for path in ["/", "/login", "/register", "/register/role"]:
+        reply = client.get(path)
+        assert reply.status_code == 302, path
+        assert reply.headers["Location"].endswith("/home")
+    client.get("/")
+    post(client, "/logout")
+    assert client.get_cookie("cg_signed_in") is None
+    assert client.get("/login").status_code == 200
