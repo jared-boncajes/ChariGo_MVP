@@ -332,9 +332,7 @@ def campaign_action(fid, action):
             409,
             "A deactivated fundraiser cannot be reopened by changing its completion status.",
         )
-    if request.method == "POST":
-        if request.form.get("confirm") != "yes":
-            abort(400, "Please confirm this action.")
+    if request.method == "POST" and request.form.get("confirm") == "yes":
         f.status = "inactive" if action == "deactivate" else "completed"
         record(
             "Fundraiser " + action,
@@ -406,9 +404,7 @@ def decide(aid, decision):
     owned_fundraiser(op.fundraiser)
     if not verified_organization():
         return redirect(url_for("organization.dashboard"))
-    if request.method == "POST":
-        if request.form.get("confirm") != "yes":
-            abort(400, "Please confirm this decision.")
+    if request.method == "POST" and request.form.get("confirm") == "yes":
         # BEGIN IMMEDIATE serializes capacity decisions in SQLite, including competing reviews.
         db.session.rollback()
         db.session.execute(db.text("BEGIN IMMEDIATE"))

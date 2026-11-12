@@ -615,7 +615,10 @@ def test_save_charity_and_confirmations(client, app):
     post(client, "/organizations/2/save")
     post(client, "/logout")
     login(client, "admin@example.com")
-    assert post(client, "/admin/actions/user/1/deactivate", {}).status_code == 400
+    # Posting without confirming (for example with JavaScript off) changes nothing
+    # and shows the confirmation page instead.
+    unconfirmed = post(client, "/admin/actions/user/1/deactivate", {})
+    assert unconfirmed.status_code == 200 and b"Confirm deactivate" in unconfirmed.data
     with app.app_context():
         assert db.session.get(User, 1).account_status == "active"
 
@@ -857,3 +860,43 @@ def test_unapproved_organization_sees_its_status_on_home(client):
     assert landed.request.path == "/organization/fundraisers"
     page = landed.get_data(as_text=True)
     assert "Please Wait!" in page and "Complete organization registration" in page
+
+
+def test_confirmations_are_popups_not_pages(client, app):
+    # Fundraiser management (organization)
+    login(client, "organization@example.com")
+    manage = client.get("/organization/fundraisers/1").get_data(as_text=True)
+    assert 'data-confirm-title="Deactivate fundraiser?"' in manage
+    assert 'data-confirm-title="Mark as completed?"' in manage
+    assert 'href="/organization/fundraisers/1/deactivate"' not in manage
+    assert manage.count("data-confirm-again=") == 2
+    # Volunteer decisions
+    applicant = client.get("/organization/applications/5").get_data(as_text=True)
+    assert 'data-confirm-title="Accept volunteer?"' in applicant
+    assert 'data-confirm-title="Decline volunteer?"' in applicant
+    assert applicant.count("data-confirm-again=") == 1  # only the decline asks twice
+    # The popup submits confirm=yes: the action is applied
+    done = post(client, "/organization/applications/5/accept", {"confirm": "yes"}, follow_redirects=True)
+    assert b"Volunteer accepted" in done.data
+    post(client, "/logout")
+    # Administrator actions carry an optional reason
+    login(client, "admin@example.com")
+    detail = client.get("/admin/organizations/3").get_data(as_text=True)
+    assert 'data-confirm-title="Approve organization?"' in detail and "data-reason=" in detail
+    assert 'name="reason"' in detail and 'href="/admin/actions/' not in detail
+    user = client.get("/admin/users/2").get_data(as_text=True)
+    assert 'data-confirm-title="Deactivate account?"' in user and "data-confirm-again=" in user
+    opp = client.get("/admin/opportunities/fundraiser/1").get_data(as_text=True)
+    assert 'data-confirm-title="Remove from listings?"' in opp
+    reasoned = post(
+        client,
+        "/admin/actions/organization/3/approve",
+        {"confirm": "yes", "reason": "Documents checked."},
+        follow_redirects=True,
+    )
+    assert b"saved successfully" in reasoned.data
+    with app.app_context():
+        record = db.session.scalar(
+            db.select(SystemRecord).where(SystemRecord.action == "Approve organization").order_by(SystemRecord.id.desc())
+        )
+        assert "Documents checked." in record.description

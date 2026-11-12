@@ -129,3 +129,19 @@
         </section>
     {% endif %}
 {% endmacro %}
+{# A button that asks in a popup first. Danger actions ask a second time. Without JavaScript
+   the form posts unconfirmed and the server answers with the confirmation page. #}
+{% macro confirm_action(url, label, title, message, confirm_label, cls='button', danger=false, again='', reason=false) %}
+    <form method="post"
+          action="{{ url }}"
+          data-confirm-title="{{ title }}"
+          data-confirm="{{ message }}"
+          data-confirm-label="{{ confirm_label }}"
+          {% if danger %}data-tone="danger" data-confirm-again="{{ again or 'This is applied right away and may be hard to undo. Do you want to continue?' }}"{% endif %}
+          {% if reason %}data-reason="yes"{% endif %}>
+        {{ csrf() }}
+        <input type="hidden" name="confirm" value="">
+        {% if reason %}<input type="hidden" name="reason" value="">{% endif %}
+        <button class="{{ cls }}" data-processing="Saving…">{{ label }}</button>
+    </form>
+{% endmacro %}

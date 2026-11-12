@@ -63,6 +63,10 @@ function showConfirmation(form, again) {
   document.getElementById("dialog-confirm").textContent = again
     ? "Yes, " + label.replace(/^Yes, /, "").toLowerCase()
     : label;
+  // Admin actions can carry an optional reason, asked for on the first popup only.
+  const reasonBox = document.getElementById("dialog-reason-wrap");
+  reasonBox.hidden = !form.dataset.reason || again;
+  if (!again) document.getElementById("dialog-reason").value = "";
   if (!confirmDialog.open) confirmDialog.showModal();
   document.getElementById("dialog-cancel").focus();
 }
@@ -87,6 +91,10 @@ document.getElementById("dialog-confirm").addEventListener("click", () => {
   }
   confirmDialog.close();
   form.dataset.confirmed = "yes";
+  const flag = form.querySelector('input[name="confirm"]');
+  if (flag) flag.value = "yes";
+  const reason = form.querySelector('input[name="reason"]');
+  if (reason) reason.value = document.getElementById("dialog-reason").value;
   form.requestSubmit();
 });
 document.querySelectorAll("form").forEach((form) => {

@@ -1,4 +1,4 @@
-{% extends 'base.html' %}{% from 'components/ui.html' import heading,avatar,badge with context %}
+{% extends 'base.html' %}{% from 'components/ui.html' import heading,avatar,badge,confirm_action with context %}
 {% block content %}
     <div class="narrow">
         {{ heading('Applicant Profile',url_for('organization.applications',fid=application.opportunity.fundraiser_id) ) }}
@@ -47,9 +47,8 @@
         </details>
         {% if application.status == 'pending' %}
             <div class="actions">
-                <a class="button"
-                   href="{{ url_for('organization.decide',aid=application.id,decision='accept') }}">Accept</a><a class="button danger"
-   href="{{ url_for('organization.decide',aid=application.id,decision='reject') }}">Decline</a>
+                {{ confirm_action(url_for('organization.decide',aid=application.id,decision='accept'), 'Accept', 'Accept volunteer?', applicant.name ~ ' will see this decision in their volunteer history.', 'Accept') }}
+                {{ confirm_action(url_for('organization.decide',aid=application.id,decision='reject'), 'Decline', 'Decline volunteer?', applicant.name ~ ' will see this decision in their volunteer history.', 'Decline', 'button danger', true, 'Last check: ' ~ applicant.name ~ ' will be told right away. Decline this application?') }}
             </div>
         {% else %}
             <p class="notice">This application has been reviewed. The applicant can see the decision in their history.</p>

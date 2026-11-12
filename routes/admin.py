@@ -247,9 +247,7 @@ def action(kind, oid, action):
     if kind in ["fundraiser", "volunteer"]:
         kwargs["kind"] = kind
     cancel_url = url_for(detail_endpoint, **kwargs)
-    if request.method == "POST":
-        if request.form.get("confirm") != "yes":
-            abort(400, "Please confirm this administrative action.")
+    if request.method == "POST" and request.form.get("confirm") == "yes":
         try:
             reason = text("reason", "Reason", 0, 750)
             if kind == "user":

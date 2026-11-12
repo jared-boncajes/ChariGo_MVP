@@ -131,7 +131,7 @@ Things to know before sharing a public link:
 | Match with the real world | Peso amounts, Philippine time, plain status notes ("The organization is reviewing your application") instead of codes |
 | User control and freedom | Back button on every inner page, review step before donating or applying (back arrow to edit, Cancel to leave), withdraw a pending application, Clear filters, dismissible messages |
 | Consistency and standards | One set of tokens and components (buttons, cards, badges, tabs, stat tiles) across all three roles; navigation always in the same place for the device |
-| Error prevention | Confirmation dialogs; costly actions (withdraw, deactivate, decline, reject, remove) are solid red and ask twice; amount presets; duplicate-submission protection; file size checked before upload |
+| Error prevention | Confirmation popups (in place, no extra page); costly actions (withdraw, deactivate, decline, reject, remove) are solid red and ask twice; amount presets; duplicate-submission protection; file size checked before upload |
 | Recognition rather than recall | Icons with text labels, category tiles, demo-account buttons, receipts and references listed in history, "Donate again" |
 | Flexibility and efficiency | Filters auto-apply, search from the home page, CSV export, impact tiles link to history |
 | Aesthetic and minimalist design | Figma palette with generous spacing, one primary action per screen, secondary detail tucked behind disclosure |
@@ -158,7 +158,7 @@ python -m pip install -r requirements-dev.txt
 python -m pytest -q
 ```
 
-31 tests cover sign-up and log-in, role and ownership restrictions, CSRF, the donation and volunteer flows, history filters / CSV export / withdrawal, organization and administrator workflows, uploads, caching and compression. Each test uses its own temporary database.
+32 tests cover sign-up and log-in, role and ownership restrictions, CSRF, the donation and volunteer flows, history filters / CSV export / withdrawal, organization and administrator workflows, uploads, caching and compression. Each test uses its own temporary database.
 
 ## Project structure
 

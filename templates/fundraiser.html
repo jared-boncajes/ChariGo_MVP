@@ -1,4 +1,4 @@
-{% extends 'base.html' %}{% from 'components/ui.html' import heading,progress,badge with context %}
+{% extends 'base.html' %}{% from 'components/ui.html' import heading,progress,badge,confirm_action with context %}
 {% block content %}
     <div class="narrow-wide {{ '' if manage else 'cover-page' }}">
         {{ heading('Manage Fundraiser' if manage else 'Fundraiser',url_for('organization.fundraisers') if manage else url_for('goer.causes')) }}
@@ -64,9 +64,8 @@
                         <a class="button secondary"
                            href="{{ url_for('organization.applications',fid=fundraiser.id) }}">Check Volunteers</a>
                         {% if fundraiser.status == 'active' and fundraiser.organization.public %}
-                            <a class="button secondary"
-                               href="{{ url_for('organization.campaign_action',fid=fundraiser.id,action='complete') }}">Mark as completed</a><a class="button danger"
-   href="{{ url_for('organization.campaign_action',fid=fundraiser.id,action='deactivate') }}">Deactivate Fundraiser</a>
+                            {{ confirm_action(url_for('organization.campaign_action',fid=fundraiser.id,action='complete'), 'Mark as completed', 'Mark as completed?', '“' ~ fundraiser.title ~ '” will stop accepting donations and volunteers. All historical records are preserved.', 'Mark as completed', 'button secondary', true, 'Last check: a completed fundraiser cannot be reopened from here. Mark it as completed now?') }}
+                            {{ confirm_action(url_for('organization.campaign_action',fid=fundraiser.id,action='deactivate'), 'Deactivate Fundraiser', 'Deactivate fundraiser?', '“' ~ fundraiser.title ~ '” will stop accepting donations and volunteers. All historical records are preserved.', 'Deactivate', 'button danger', true, 'Last check: donations and volunteering for this campaign stop immediately. Deactivate it now?') }}
                         {% endif %}
                     </div>
                 {% elif fundraiser.accepting %}

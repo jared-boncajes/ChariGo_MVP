@@ -1,4 +1,4 @@
-{% extends 'base.html' %}{% from 'components/ui.html' import heading,avatar,badge with context %}
+{% extends 'base.html' %}{% from 'components/ui.html' import heading,avatar,badge,confirm_action with context %}
 {% block content %}
     <div class="narrow-wide">
         {{ heading(title,url_for('admin.users') if kind == 'user' else url_for('admin.organizations') if kind == 'organization' else url_for('admin.opportunities')) }}
@@ -39,9 +39,13 @@
                     <a href="{{ url_for('admin.organization_detail',oid=item.organization.id) }}">Review {{ item.organization.name }} →</a>
                 {% endif %}
             </section>
+            {% set admin_msg = 'This changes access or public visibility. The record and its history are preserved and the action is audited.' %}
             {% if item.id != current_user.id %}
-                <a class="button {{ 'danger' if item.account_status == 'active' else '' }}"
-                   href="{{ url_for('admin.action',kind='user',oid=item.id,action='deactivate' if item.account_status == 'active' else 'reactivate') }}">{{ 'Deactivate' if item.account_status == 'active' else 'Reactivate' }} Account</a>
+                {% if item.account_status == 'active' %}
+                    {{ confirm_action(url_for('admin.action',kind='user',oid=item.id,action='deactivate'), 'Deactivate Account', 'Deactivate account?', admin_msg, 'Deactivate', 'button danger', true, '', true) }}
+                {% else %}
+                    {{ confirm_action(url_for('admin.action',kind='user',oid=item.id,action='reactivate'), 'Reactivate Account', 'Reactivate account?', admin_msg, 'Reactivate', 'button', false, '', true) }}
+                {% endif %}
             {% else %}
                 <p class="notice">You cannot deactivate your own administrator account.</p>
             {% endif %}
@@ -90,20 +94,17 @@
                     {% if item.rejection_reason %}<p class="notice">Rejection reason: {{ item.rejection_reason }}</p>{% endif %}
                 </section>
             </div>
+            {% set admin_msg = 'This changes access or public visibility. The record and its history are preserved and the action is audited.' %}
             <div class="actions">
                 {% if item.verification_status in ['pending','rejected'] %}
-                    <a class="button"
-                       href="{{ url_for('admin.action',kind=kind,oid=item.id,action='approve') }}">Approve Organization</a>
+                    {{ confirm_action(url_for('admin.action',kind=kind,oid=item.id,action='approve'), 'Approve Organization', 'Approve organization?', admin_msg, 'Approve', 'button', false, '', true) }}
                     {% if item.verification_status == 'pending' %}
-                        <a class="button danger"
-                           href="{{ url_for('admin.action',kind=kind,oid=item.id,action='reject') }}">Reject Organization</a>
+                        {{ confirm_action(url_for('admin.action',kind=kind,oid=item.id,action='reject'), 'Reject Organization', 'Reject organization?', admin_msg, 'Reject', 'button danger', true, '', true) }}
                     {% endif %}
                 {% elif item.verification_status == 'verified' %}
-                    <a class="button danger"
-                       href="{{ url_for('admin.action',kind=kind,oid=item.id,action='deactivate') }}">Deactivate Organization</a>
+                    {{ confirm_action(url_for('admin.action',kind=kind,oid=item.id,action='deactivate'), 'Deactivate Organization', 'Deactivate organization?', admin_msg, 'Deactivate', 'button danger', true, '', true) }}
                 {% else %}
-                    <a class="button"
-                       href="{{ url_for('admin.action',kind=kind,oid=item.id,action='reactivate') }}">Reactivate Organization</a>
+                    {{ confirm_action(url_for('admin.action',kind=kind,oid=item.id,action='reactivate'), 'Reactivate Organization', 'Reactivate organization?', admin_msg, 'Reactivate', 'button', false, '', true) }}
                 {% endif %}
             </div>
         {% else %}
@@ -162,13 +163,12 @@
             </div>
             <div class="actions">
                 {% set status = item.moderation_status if kind == 'fundraiser' else item.status %}
+                {% set admin_msg = 'This changes public visibility. The record and its history are preserved and the action is audited.' %}
                 {% if status == 'active' %}
-                    <a class="button danger"
-                       href="{{ url_for('admin.action',kind=kind,oid=item.id,action='deactivate') }}">Deactivate Opportunity</a><a class="button danger"
-   href="{{ url_for('admin.action',kind=kind,oid=item.id,action='remove') }}">Remove from listings</a>
+                    {{ confirm_action(url_for('admin.action',kind=kind,oid=item.id,action='deactivate'), 'Deactivate Opportunity', 'Deactivate listing?', admin_msg, 'Deactivate', 'button danger', true, '', true) }}
+                    {{ confirm_action(url_for('admin.action',kind=kind,oid=item.id,action='remove'), 'Remove from listings', 'Remove from listings?', admin_msg, 'Remove', 'button danger', true, '', true) }}
                 {% else %}
-                    <a class="button"
-                       href="{{ url_for('admin.action',kind=kind,oid=item.id,action='reactivate') }}">Reactivate Opportunity</a>
+                    {{ confirm_action(url_for('admin.action',kind=kind,oid=item.id,action='reactivate'), 'Reactivate Opportunity', 'Reactivate listing?', admin_msg, 'Reactivate', 'button', false, '', true) }}
                 {% endif %}
             </div>
             <p class="fine-print">

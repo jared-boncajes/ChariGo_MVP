@@ -101,6 +101,10 @@ a:hover {
   outline-offset: 2px;
   border-radius: 6px;
 }
+/* Author display rules (such as .field) must not override the hidden attribute. */
+[hidden] {
+  display: none !important;
+}
 .sr-only {
   position: absolute;
   width: 1px;
@@ -408,6 +412,9 @@ a:hover {
 .stack {
   display: grid;
   gap: 12px;
+}
+.stack > form > .button {
+  width: 100%;
 }
 .choice-campaign {
   display: grid;
