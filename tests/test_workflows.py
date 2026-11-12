@@ -915,5 +915,5 @@ def test_logout_and_withdraw_popups_are_red(client):
     post(client, "/logout")
     login(client)
     history = client.get("/history/volunteering?status=pending").get_data(as_text=True)
-    withdraw = history.split("/withdraw")[0].rsplit("<form", 1)[1]
+    withdraw = history.split("/withdraw")[1].split("</form>")[0]
     assert 'data-tone="danger"' in withdraw and "data-confirm-again=" in withdraw
