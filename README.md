@@ -187,3 +187,5 @@ Useful commands: `flask --app app:create_app seed` (load demo data into an empty
 - Security already in place: hashed passwords, CSRF tokens on every form, server-side role and ownership checks, a strict Content Security Policy, validated and re-encoded image uploads, private portfolio PDFs.
 
 See [docs/FIGMA_AUDIT.md](docs/FIGMA_AUDIT.md) for how each Figma frame maps to a page.
+
+Presenting this as a group? See [docs/ChariGo_Demo_Guide.pdf](docs/ChariGo_Demo_Guide.pdf): a four-person demonstration plan with who does what, what to click, what to say, and likely questions.
