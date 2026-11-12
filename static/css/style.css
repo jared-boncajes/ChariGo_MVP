@@ -1124,6 +1124,25 @@ a.stat:hover {
 .hero-impact h2 {
   font-size: 16px;
 }
+/* Links and small notes that follow a block must be blocks themselves: an inline
+   element ignores the top margin the surrounding stack gives it. */
+.hero-impact > .text-link,
+.detail-grid > section > a,
+.card > a:not(.button),
+.admin-row > div > a,
+.demo-info small {
+  display: block;
+  width: fit-content;
+}
+.demo-info small {
+  width: auto;
+}
+.role-card span span,
+.admin-row small,
+.record-row small {
+  display: block;
+  margin-top: 2px;
+}
 .hero-impact .stat {
   background: #fff;
 }
