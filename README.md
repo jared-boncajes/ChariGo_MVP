@@ -189,6 +189,6 @@ Useful commands: `flask --app app:create_app seed` (load demo data into an empty
 
 See [docs/FIGMA_AUDIT.md](docs/FIGMA_AUDIT.md) for how each Figma frame maps to a page.
 
-Final project documentation (CSHCI): [docs/ChariGo_Final_Project_Documentation.docx](docs/ChariGo_Final_Project_Documentation.docx). Section 3.4 (teacher comments) and Section 5 (who made what) are left for the group to fill in.
+Final project documentation (CSHCI): [docs/ChariGo_Final_Project_Documentation.docx](docs/ChariGo_Final_Project_Documentation.docx). Section 5 (who made what) is left for the group to fill in.
 
 Presenting this as a group? See [docs/ChariGo_Demo_Guide.pdf](docs/ChariGo_Demo_Guide.pdf): a 9-minute, four-person live walkthrough: who does what, what to click, and what to say.
